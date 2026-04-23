@@ -10,12 +10,21 @@ func main() {
 	a := app.New()
 	w := a.NewWindow("Hello")
 
-	hello := widget.NewLabel("Hello World!")
+	textArea := widget.NewMultiLineEntry()
+	hello := widget.NewLabel("")
+
+	form := &widget.Form{
+		Items: []*widget.FormItem{
+			{Text: "Query",Widget: textArea},
+		},
+		OnSubmit: func() {
+			hello.SetText(textArea.Text)
+		},
+	}
+
 	w.SetContent(container.NewVBox(
+		form,
 		hello,
-		widget.NewButton("Hi!", func() {
-			hello.SetText("Welcome :)")
-		}),
 		))
 	
 	w.ShowAndRun()
