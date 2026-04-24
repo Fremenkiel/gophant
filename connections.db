@@ -37,3 +37,7 @@ D :019dbf0c-fa3c-7da4-93ac-e1a3ca86c62f
 
 S :019dbf1a-215f-7e0d-9441-1b642a6de0e5
 {"ID":"019dbf1a-215f-7e0d-9441-1b642a6de0e5","Name":"tewt","Address":"localhost","Port":"5432","Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE"}
+D :019dbf1a-215f-7e0d-9441-1b642a6de0e5
+
+S :019dbf5f-771d-73f3-a6a9-8c59632540d8
+{"ID":"019dbf5f-771d-73f3-a6a9-8c59632540d8","Name":"TestDB","Address":"localhost","Port":"5432","Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE"}

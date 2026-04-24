@@ -16,25 +16,29 @@ type ConnectionList struct {
 	Data	[]models.Connection
 }
 
-func NewConnectionList(a fyne.App) *ConnectionList {
-	cm := menus.NewConnectionMenu(a)
+func NewConnectionList(a fyne.App, cm *menus.ConnectionMenu) *ConnectionList {
 	cl := &ConnectionList{Data: createSidebarElements()}
 
-	l := widget.NewList(
+	var l *widget.List
+	l = widget.NewList(
 		func() int {
 			return len(cl.Data)
 		},
 		func() fyne.CanvasObject {
-			l := elements.NewTapSecondaryLabel("Template", func(pe *fyne.PointEvent) {
-				log.Print(pe)
-				cm.Open()
-			})
-			return l
+			return elements.NewTapLabel("Template", nil, nil)
 		},
 		func(lii widget.ListItemID, co fyne.CanvasObject) {
-			co.(*elements.TapSecondaryLabel).SetText(cl.Data[lii].Name)
+			lbl := co.(*elements.TapLabel)
+			lbl.SetText(cl.Data[lii].Name)
+			lbl.OnTapped = func() {
+				l.Select(lii)
+			}
+			lbl.OnTappedSecondary = func(pe *fyne.PointEvent) {
+				log.Print(pe)
+				cm.Open(pe.AbsolutePosition)
+			}
 		},
-		)
+	)
 
 	l.OnSelected = func(i widget.ListItemID) {
 		connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
@@ -44,13 +48,11 @@ func NewConnectionList(a fyne.App) *ConnectionList {
 		defer connections.Store.Close()
 
 		id := cl.Data[i].ID
-		log.Print(id)
 
 		key := ""
 		if id != nil {
 			key = id.String()
 		}
-		log.Print(key)
 
 		connections.Delete(key)
 		cl.Refresh()
