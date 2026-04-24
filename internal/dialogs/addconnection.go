@@ -1,4 +1,4 @@
-package dialog
+package dialogs
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
-	"github.com/Fremenkiel/gophant/v2/internal/elements"
+	"github.com/Fremenkiel/gophant/v2/internal/fragments"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Jipok/go-persist"
 	"github.com/google/uuid"
@@ -14,11 +14,10 @@ import (
 
 type AddConnectionDialog struct {
 	Window					fyne.Window
-	ConnectionList	*elements.ConnectionList
+	ConnectionList	*fragments.ConnectionList
 }
-//Server=localhost;Database=bookingboard;Port=5432;User Id=bookingboard;Password=bookingboard;Pooling=false;Trust Server Certificate=true;
 
-func NewAddConnectionDialog(a fyne.App, cl *elements.ConnectionList) *AddConnectionDialog {
+func NewAddConnectionDialog(a fyne.App, cl *fragments.ConnectionList) *AddConnectionDialog {
 	rAddress := regexp.MustCompile(`[sS]erver=(?P<server>[^;]*);`)
 	rDb := regexp.MustCompile(`[dD]atabase=(?P<database>[^;]*);`)
 	rPort := regexp.MustCompile(`[pP]ort=(?P<port>[0-9]*);`)

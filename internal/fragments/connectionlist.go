@@ -1,10 +1,12 @@
-package elements
+package fragments
 
 import (
 	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Fremenkiel/gophant/v2/internal/elements"
+	"github.com/Fremenkiel/gophant/v2/internal/menus"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Jipok/go-persist"
 )
@@ -14,7 +16,8 @@ type ConnectionList struct {
 	Data	[]models.Connection
 }
 
-func NewConnectionList() *ConnectionList {
+func NewConnectionList(a fyne.App) *ConnectionList {
+	cm := menus.NewConnectionMenu(a)
 	cl := &ConnectionList{Data: createSidebarElements()}
 
 	l := widget.NewList(
@@ -22,10 +25,14 @@ func NewConnectionList() *ConnectionList {
 			return len(cl.Data)
 		},
 		func() fyne.CanvasObject {
-			return widget.NewLabel("Template")
+			l := elements.NewTapSecondaryLabel("Template", func(pe *fyne.PointEvent) {
+				log.Print(pe)
+				cm.Open()
+			})
+			return l
 		},
 		func(lii widget.ListItemID, co fyne.CanvasObject) {
-			co.(*widget.Label).SetText(cl.Data[lii].Name)
+			co.(*elements.TapSecondaryLabel).SetText(cl.Data[lii].Name)
 		},
 		)
 

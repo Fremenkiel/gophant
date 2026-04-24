@@ -4,23 +4,22 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/Fremenkiel/gophant/v2/internal/dialog"
-	"github.com/Fremenkiel/gophant/v2/internal/elements"
+	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/fragments"
 	"github.com/Fremenkiel/gophant/v2/internal/utils"
 )
 
 type MainLayout struct {
-	Sidebar 		*fragments.SidebarFragment
+	Sidebar 		*Sidebar
 	KeyShortcut	*utils.KeyShortcutUtils
 }
 
 func NewMainLayout(a fyne.App, ks *utils.KeyShortcutUtils) *MainLayout {
-	l := elements.NewConnectionList()
-	acd := dialog.NewAddConnectionDialog(a, l)
+	l := fragments.NewConnectionList(a)
+	acd := dialogs.NewAddConnectionDialog(a, l)
 	ks.MapDefaultKeyBindings(acd.Window)
 
-	return &MainLayout{Sidebar: fragments.NewSidebarFragment(acd, l), KeyShortcut: ks}
+	return &MainLayout{Sidebar: NewSidebar(acd, l), KeyShortcut: ks}
 }
 
 func (s *MainLayout) BuildLayout() *container.Split {
