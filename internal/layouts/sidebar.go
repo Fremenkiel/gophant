@@ -10,7 +10,9 @@ func (s *Sidebar) MinSize(objects []fyne.CanvasObject) fyne.Size {
 	for _, o := range objects {
 		childSize := o.MinSize()
 
-		w += childSize.Width
+		if childSize.Width > w {
+			w = childSize.Width
+		}
 		h += childSize.Height
 	}
 	return fyne.NewSize(w, h)
