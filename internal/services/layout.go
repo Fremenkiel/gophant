@@ -4,14 +4,19 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Fremenkiel/gophant/v2/internal/dialog"
 )
 
 type LayoutService struct {
-	Sidebar *SidebarService
+	Sidebar 		*SidebarService
+	KeyShortcut	*KeyShortcutService
 }
 
-func NewLayoutService() *LayoutService {
-	return &LayoutService{Sidebar: NewSidebarService()}
+func NewLayoutService(a fyne.App, ks *KeyShortcutService) *LayoutService {
+	acd := dialog.NewAddConnectionDialog(a)
+	ks.MapDefaultKeyBindings(acd.Window)
+
+	return &LayoutService{Sidebar: NewSidebarService(acd), KeyShortcut: ks}
 }
 
 func (s *LayoutService) BuildLayout() *container.Split {

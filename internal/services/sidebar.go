@@ -7,16 +7,18 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Fremenkiel/gophant/v2/internal/dialog"
 	"github.com/Fremenkiel/gophant/v2/internal/layouts"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Jipok/go-persist"
-	"github.com/google/uuid"
 )
 
-type SidebarService struct {}
+type SidebarService struct {
+	AddConnectionDialog		*dialog.AddConnectionDialog
+}
 
-func NewSidebarService() *SidebarService {
-	return &SidebarService{}
+func NewSidebarService(acd *dialog.AddConnectionDialog) *SidebarService {
+	return &SidebarService{AddConnectionDialog: acd}
 }
 
 func (s *SidebarService) BuildSidebar() *fyne.Container {
@@ -60,6 +62,8 @@ func (s *SidebarService) BuildSidebar() *fyne.Container {
 
 	toolbar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+			s.AddConnectionDialog.Open()
+			/*
 			connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
 			if err != nil {
 				log.Fatal(err)
@@ -77,6 +81,7 @@ func (s *SidebarService) BuildSidebar() *fyne.Container {
 			})
 			data = createSidebarElements()
 			l.Refresh()
+			*/
 		}),
 		)
 

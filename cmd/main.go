@@ -3,24 +3,24 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/driver/desktop"
 	"github.com/Fremenkiel/gophant/v2/internal/services"
+	"github.com/Fremenkiel/gophant/v2/internal/theme"
 )
 
 func main() {
 	a := app.New()
+	a.Settings().SetTheme(&theme.GophantTheme{})
+
+	ks := services.NewKeyShortcutService()
+	ls := services.NewLayoutService(a, ks)
+
 	w := a.NewWindow("Main page")
 	w.Resize(fyne.NewSize(500, 400))
-
-	closeKey := desktop.CustomShortcut{KeyName: fyne.KeyW, Modifier: fyne.KeyModifierShortcutDefault }
-	w.Canvas().AddShortcut(&closeKey, func(shortcut fyne.Shortcut) {
-		a.Quit()
-	})
-
-	ls := services.NewLayoutService()
 	w.SetContent(ls.BuildLayout())
+	ls.KeyShortcut.MapDefaultKeyBindings(w)
+	w.Show()
 	
-	w.ShowAndRun()
+	a.Run()
 }
 
 
