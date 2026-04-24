@@ -35,27 +35,12 @@ func NewConnectionList(a fyne.App, cm *menus.ConnectionMenu) *ConnectionList {
 			}
 			lbl.OnTappedSecondary = func(pe *fyne.PointEvent) {
 				log.Print(pe)
-				cm.Open(pe.AbsolutePosition)
+				cm.Open(pe.AbsolutePosition, *cl.Data[lii].ID, cl.Refresh)
 			}
 		},
 	)
 
 	l.OnSelected = func(i widget.ListItemID) {
-		connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer connections.Store.Close()
-
-		id := cl.Data[i].ID
-
-		key := ""
-		if id != nil {
-			key = id.String()
-		}
-
-		connections.Delete(key)
-		cl.Refresh()
 	}
 
 	cl.List = l
