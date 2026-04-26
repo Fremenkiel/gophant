@@ -3,6 +3,7 @@ package dialogs
 import (
 	"log"
 	"regexp"
+	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
@@ -40,7 +41,11 @@ func NewAddConnectionDialog(a fyne.App, cl *fragments.ConnectionList) *AddConnec
 			eDb.SetText(dbMatch[1])
 		}
 		if portMatch := rPort.FindStringSubmatch(s); len(portMatch) == 2 {
-			ePort.SetText(portMatch[1])
+			p, err := strconv.ParseInt(portMatch[1], 0, 16)
+			if err != nil {
+				log.Fatal(err)
+			}
+			ePort.SetText(strconv.Itoa(int(p)))
 		}
 		if userMatch := rUser.FindStringSubmatch(s); len(userMatch) == 2 {
 			eUser.SetText(userMatch[1])
@@ -75,11 +80,17 @@ func NewAddConnectionDialog(a fyne.App, cl *fragments.ConnectionList) *AddConnec
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			p, err := strconv.ParseInt(ePort.Text, 0, 16)
+			if err != nil {
+				log.Fatal(err)
+			}
+			
 			connections.Set(id.String(), models.Connection{
 				ID: &id,
 				Name: eName.Text,
 				Address: eAddress.Text,
-				Port: ePort.Text,
+				Port: uint16(p),
 				Database: eDb.Text,
 				Username: eUser.Text,
 				Password: ePass.Text,

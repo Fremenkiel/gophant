@@ -20,7 +20,7 @@ func NewSidebar(acd *dialogs.AddConnectionDialog, cl *fragments.ConnectionList) 
 }
 
 func (s *Sidebar) BuildSidebar() *fyne.Container {
-	scroll := container.NewVScroll(s.ConnectionList.List)
+	scroll := container.NewVScroll(container.NewHScroll(s.ConnectionList.List))
 
 	toolbar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {

@@ -7,7 +7,7 @@ type Connection struct {
 	ID										*uuid.UUID
 	Name									string
 	Address								string
-	Port									string
+	Port									uint16
 	Database							string
 	Username							string
 	Password							string

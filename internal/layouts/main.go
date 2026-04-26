@@ -26,10 +26,12 @@ func NewMainLayout(a fyne.App, w fyne.Window, ks *utils.KeyShortcutUtils) *MainL
 }
 
 func (s *MainLayout) BuildLayout() *container.Split {
-	return container.NewHSplit(
+	c := container.NewHSplit(
 		s.Sidebar.BuildSidebar(),
 		s.buildMainLayout(),
 		)
+	c.SetOffset(0.2)
+	return c
 }
 
 func (s *MainLayout) buildMainLayout() *fyne.Container {

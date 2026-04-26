@@ -1,45 +1,7 @@
 go-persist 1
-S :019dbe3f-7fd8-78e9-969f-6a8b3f58ce03
-{"ID":"019dbe3f-7fd8-78e9-969f-6a8b3f58ce03","Name":"DB1","ConnectionString":"","Status":""}
-D :019dbe3f-7fd8-78e9-969f-6a8b3f58ce03
-
-S :019dbe3f-8939-79bc-a427-6a610d3845e5
-{"ID":"019dbe3f-8939-79bc-a427-6a610d3845e5","Name":"DB1","ConnectionString":"","Status":""}
-D :019dbe3f-8939-79bc-a427-6a610d3845e5
-
-S :019dbe40-8c8b-736b-b20e-1e9fdc4fc75c
-{"ID":"019dbe40-8c8b-736b-b20e-1e9fdc4fc75c","Name":"DB1","ConnectionString":"","Status":""}
-D :019dbe40-8c8b-736b-b20e-1e9fdc4fc75c
-
-S :019dbe40-9340-75c0-90f6-9c647f9b69fc
-{"ID":"019dbe40-9340-75c0-90f6-9c647f9b69fc","Name":"DB1","ConnectionString":"","Status":""}
-D :019dbe40-9340-75c0-90f6-9c647f9b69fc
-
-S :019dbe40-990b-7bfe-a23d-d7cda831e84b
-{"ID":"019dbe40-990b-7bfe-a23d-d7cda831e84b","Name":"DB1","ConnectionString":"","Status":""}
-D :019dbe40-990b-7bfe-a23d-d7cda831e84b
-
-S :019dbe40-9e62-72a3-a27f-ecb2fdf657f5
-{"ID":"019dbe40-9e62-72a3-a27f-ecb2fdf657f5","Name":"DB1","ConnectionString":"","Status":""}
-S :019dbe40-9fd0-7510-b7a9-6fed7fad2fe2
-{"ID":"019dbe40-9fd0-7510-b7a9-6fed7fad2fe2","Name":"DB1","ConnectionString":"","Status":""}
-D :019dbe40-9fd0-7510-b7a9-6fed7fad2fe2
-
-D :019dbe40-9e62-72a3-a27f-ecb2fdf657f5
-
-S :019dbefe-6b3e-74af-9dba-d3857de43bf9
-{"ID":"019dbefe-6b3e-74af-9dba-d3857de43bf9","Name":"Test","Address":"localhost","Port":"5432","Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE"}
-D :019dbefe-6b3e-74af-9dba-d3857de43bf9
-
-S :019dbf0c-fa3c-7da4-93ac-e1a3ca86c62f
-{"ID":"019dbf0c-fa3c-7da4-93ac-e1a3ca86c62f","Name":"Test","Address":"localhost","Port":"5432","Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE"}
-D :019dbf0c-fa3c-7da4-93ac-e1a3ca86c62f
-
-S :019dbf1a-215f-7e0d-9441-1b642a6de0e5
-{"ID":"019dbf1a-215f-7e0d-9441-1b642a6de0e5","Name":"tewt","Address":"localhost","Port":"5432","Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE"}
-D :019dbf1a-215f-7e0d-9441-1b642a6de0e5
-
-S :019dbf5f-771d-73f3-a6a9-8c59632540d8
-{"ID":"019dbf5f-771d-73f3-a6a9-8c59632540d8","Name":"TestDB","Address":"localhost","Port":"5432","Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE"}
-D :019dbf5f-771d-73f3-a6a9-8c59632540d8
-
+S :019dc868-266f-7839-a466-16a9f81adfba
+{"ID":"019dc868-266f-7839-a466-16a9f81adfba","Name":"bb","Address":"localhost","Port":5432,"Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE"}
+S :019dc868-266f-7839-a466-16a9f81adfba
+{"ID":"019dc868-266f-7839-a466-16a9f81adfba","Name":"bb","Address":"localhost","Port":5432,"Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"ONLINE"}
+S :019dc868-266f-7839-a466-16a9f81adfba
+{"ID":"019dc868-266f-7839-a466-16a9f81adfba","Name":"bb","Address":"localhost","Port":5432,"Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE"}
