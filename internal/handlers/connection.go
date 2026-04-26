@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"database/sql"
-	"log"
 	"time"
 
+	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
@@ -12,11 +12,13 @@ import (
 
 type ConnectionHandler struct {
 	Connection	*models.Connection
+
 	db					*sql.DB
 	cfg					pq.Config
+	reporter		interfaces.ErrorReporter
 }
 
-func NewConnectionHandler(c *models.Connection) *ConnectionHandler {
+func NewConnectionHandler(r interfaces.ErrorReporter, c *models.Connection) *ConnectionHandler {
 	return &ConnectionHandler{Connection: c, cfg: pq.Config{
 		Host:           c.Address,
 		Port:           c.Port,
@@ -25,14 +27,15 @@ func NewConnectionHandler(c *models.Connection) *ConnectionHandler {
 		Password: 			c.Password,
 		ConnectTimeout: 5 * time.Second,
 		SSLMode: pq.SSLModePrefer,
-	}}
+	}, reporter: r}
 }
 
 func (h *ConnectionHandler) Connect() {
 	if h.db == nil {
 		db, err := createConnection(h.cfg)
 		if err != nil {
-			log.Fatal(err)
+			h.reporter.Report(err)
+			return
 		}
 
 		h.db = db
@@ -41,7 +44,8 @@ func (h *ConnectionHandler) Connect() {
 	if err != nil {
 		db, err := createConnection(h.cfg)
 		if err != nil {
-			log.Fatal(err)
+			h.reporter.Report(err)
+			return
 		}
 
 		h.db = db
@@ -55,7 +59,8 @@ func (h *ConnectionHandler) Disconnect() {
 	}
 	err := h.db.Close()
 	if err != nil {
-		log.Fatal(err)
+			h.reporter.Report(err)
+			return
 	}
 	h.db = nil
 	h.Connection.Status = models.OFFLINE

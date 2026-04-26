@@ -7,16 +7,19 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/fragments"
+	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/themes"
 )
 
 type Sidebar struct {
 	AddConnectionDialog		*dialogs.AddConnectionDialog
 	ConnectionList				*fragments.ConnectionList
+
+	reporter							interfaces.ErrorReporter
 }
 
-func NewSidebar(acd *dialogs.AddConnectionDialog, cl *fragments.ConnectionList) *Sidebar {
-	return &Sidebar{AddConnectionDialog: acd, ConnectionList: cl}
+func NewSidebar(r interfaces.ErrorReporter, acd *dialogs.AddConnectionDialog, cl *fragments.ConnectionList) *Sidebar {
+	return &Sidebar{AddConnectionDialog: acd, ConnectionList: cl, reporter: r}
 }
 
 func (s *Sidebar) BuildSidebar() *fyne.Container {

@@ -1,11 +1,10 @@
 package menus
 
 import (
-	"log"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Fremenkiel/gophant/v2/internal/handlers"
+	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Jipok/go-persist"
 )
@@ -13,10 +12,11 @@ import (
 type ConnectionMenu struct {
 	Window					fyne.Window
 	PopUp					*widget.PopUpMenu
+	reporter			interfaces.ErrorReporter
 }
 
-func NewConnectionMenu(a fyne.App, w fyne.Window) *ConnectionMenu {
-	return &ConnectionMenu{Window: w}
+func NewConnectionMenu(a fyne.App, r interfaces.ErrorReporter, w fyne.Window) *ConnectionMenu {
+	return &ConnectionMenu{Window: w, reporter: r}
 }
 
 
@@ -24,7 +24,8 @@ func (d *ConnectionMenu) Open(pos fyne.Position, c *handlers.ConnectionHandler, 
 	i1 := fyne.NewMenuItem("Remove Connection", func() {
 		connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
 		if err != nil {
-			log.Fatal(err)
+			d.reporter.Report(err)
+			return 
 		}
 		defer connections.Store.Close()
 
@@ -36,7 +37,8 @@ func (d *ConnectionMenu) Open(pos fyne.Position, c *handlers.ConnectionHandler, 
 		c.Disconnect()
 		connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
 		if err != nil {
-			log.Fatal(err)
+			d.reporter.Report(err)
+			return 
 		}
 		defer connections.Store.Close()
 
@@ -48,7 +50,8 @@ func (d *ConnectionMenu) Open(pos fyne.Position, c *handlers.ConnectionHandler, 
 			c.Connect()
 			connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
 			if err != nil {
-				log.Fatal(err)
+				d.reporter.Report(err)
+				return 
 			}
 			defer connections.Store.Close()
 

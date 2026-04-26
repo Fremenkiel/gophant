@@ -1,13 +1,13 @@
 package dialogs
 
 import (
-	"log"
 	"regexp"
 	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Fremenkiel/gophant/v2/internal/fragments"
+	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Jipok/go-persist"
 	"github.com/google/uuid"
@@ -16,9 +16,10 @@ import (
 type AddConnectionDialog struct {
 	Window					fyne.Window
 	ConnectionList	*fragments.ConnectionList
+	reporter				interfaces.ErrorReporter
 }
 
-func NewAddConnectionDialog(a fyne.App, cl *fragments.ConnectionList) *AddConnectionDialog {
+func NewAddConnectionDialog(a fyne.App, r interfaces.ErrorReporter, cl *fragments.ConnectionList) *AddConnectionDialog {
 	rAddress := regexp.MustCompile(`[sS]erver=(?P<server>[^;]*);`)
 	rDb := regexp.MustCompile(`[dD]atabase=(?P<database>[^;]*);`)
 	rPort := regexp.MustCompile(`[pP]ort=(?P<port>[0-9]*);`)
@@ -43,7 +44,8 @@ func NewAddConnectionDialog(a fyne.App, cl *fragments.ConnectionList) *AddConnec
 		if portMatch := rPort.FindStringSubmatch(s); len(portMatch) == 2 {
 			p, err := strconv.ParseInt(portMatch[1], 0, 16)
 			if err != nil {
-				log.Fatal(err)
+				r.Report(err)
+				return 
 			}
 			ePort.SetText(strconv.Itoa(int(p)))
 		}
@@ -72,18 +74,21 @@ func NewAddConnectionDialog(a fyne.App, cl *fragments.ConnectionList) *AddConnec
 		OnSubmit: func() {
 			connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
 			if err != nil {
-				log.Fatal(err)
+				r.Report(err)
+				return 
 			}
 			defer connections.Store.Close()
 
 			id, err := uuid.NewV7()
 			if err != nil {
-				log.Fatal(err)
+				r.Report(err)
+				return 
 			}
 
 			p, err := strconv.ParseInt(ePort.Text, 0, 16)
 			if err != nil {
-				log.Fatal(err)
+				r.Report(err)
+				return 
 			}
 			
 			connections.Set(id.String(), models.Connection{

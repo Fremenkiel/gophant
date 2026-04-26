@@ -27,7 +27,7 @@ func (i *IconBox) CreateRenderer() fyne.WidgetRenderer {
 }
 
 func (i *IconBox) SetContent(text string, icon fyne.CanvasObject) {
-	i.label = widget.NewLabel(text)
+	i.label.SetText(text)
 
 	icon.Resize(fyne.NewSize(12, 12))
 	i.icon.Objects[0] = icon

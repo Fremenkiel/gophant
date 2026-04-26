@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/handlers"
+	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/menus"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Fremenkiel/gophant/v2/internal/themes"
@@ -17,13 +18,14 @@ import (
 type ConnectionList struct {
 	List	*widget.List
 	Data	[]*handlers.ConnectionHandler
+
+	reporter		interfaces.ErrorReporter
 }
 
-func NewConnectionList(a fyne.App, cm *menus.ConnectionMenu) *ConnectionList {
-	cl := &ConnectionList{Data: createSidebarElements()}
+func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *ConnectionList {
+	cl := &ConnectionList{Data: createSidebarElements(r), reporter: r}
 
-	var l *widget.List
-	l = widget.NewList(
+	cl.List = widget.NewList(
 		func() int {
 			return len(cl.Data)
 		},
@@ -33,6 +35,9 @@ func NewConnectionList(a fyne.App, cm *menus.ConnectionMenu) *ConnectionList {
 		},
 		func(lii widget.ListItemID, co fyne.CanvasObject) {
 			h := cl.Data[lii]
+			if h == nil {
+				log.Print("No Connection fould")
+			}
 			d := h.Connection
 			lbl := co.(*elements.IconBox)
 			sc := themes.Palette.Danger
@@ -41,9 +46,9 @@ func NewConnectionList(a fyne.App, cm *menus.ConnectionMenu) *ConnectionList {
 			}
 
 			c := canvas.NewCircle(sc)
+			log.Print(d.Name)
 			lbl.SetContent(d.Name, c)
 			lbl.OnTapped = func(pe *fyne.PointEvent) {
-				l.Select(lii)
 			}
 			lbl.OnTappedSecondary = func(pe *fyne.PointEvent) {
 				cm.Open(pe.AbsolutePosition, h, cl.Refresh, cl.Reload)
@@ -54,11 +59,6 @@ func NewConnectionList(a fyne.App, cm *menus.ConnectionMenu) *ConnectionList {
 		},
 	)
 
-	l.OnSelected = func(i widget.ListItemID) {
-	}
-
-	cl.List = l
-
 	return cl
 }
 
@@ -68,21 +68,23 @@ func (c *ConnectionList) Refresh() {
 }
 
 func (c *ConnectionList) Reload() {
-	c.Data = createSidebarElements()
+	c.Data = createSidebarElements(c.reporter)
 	c.List.UnselectAll()
 	c.List.Refresh()
 }
 
-func createSidebarElements() []*handlers.ConnectionHandler {
+func createSidebarElements(r interfaces.ErrorReporter) []*handlers.ConnectionHandler {
 	databases, err := persist.OpenSingleMap[models.Connection]("connections.db")
 	if err != nil {
-		log.Fatal(err)
+		r.Report(err)
+		return nil
 	}
 	defer databases.Store.Close()
 
 	var connections []*handlers.ConnectionHandler
 	databases.Range(func(k string, v models.Connection) bool {
-		connections = append(connections, handlers.NewConnectionHandler(&v))
+		h := handlers.NewConnectionHandler(r, &v)
+		connections = append(connections, h)
 		return true
 	})
 	return connections
