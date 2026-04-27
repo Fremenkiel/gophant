@@ -46,7 +46,6 @@ func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.Connect
 			}
 
 			c := canvas.NewCircle(sc)
-			log.Print(d.Name)
 			lbl.SetContent(d.Name, c)
 			lbl.OnTapped = func(pe *fyne.PointEvent) {
 			}

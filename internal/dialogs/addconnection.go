@@ -1,6 +1,7 @@
 package dialogs
 
 import (
+	"errors"
 	"regexp"
 	"strconv"
 
@@ -27,9 +28,22 @@ func NewAddConnectionDialog(a fyne.App, r interfaces.ErrorReporter, cl *fragment
 	rPass := regexp.MustCompile(`[pP]assword=(?P<password>[^;]*);`)
 
 	eName := widget.NewEntry()
+	eName.Validator = func(i string) error {
+		if len(i) == 0 {
+			return errors.New("Name is required")
+		}
+		return nil
+	}
 	eAddress := widget.NewEntry()
 	eDb := widget.NewEntry()
 	ePort := widget.NewEntry()
+	ePort.Validator = func(i string) error {
+		_, err := strconv.ParseInt(i, 0, 16)
+		if err != nil {
+			return errors.New("Invalid port")
+		}
+		return nil
+	}
 	eUser := widget.NewEntry()
 	ePass := widget.NewEntry()
 
@@ -42,12 +56,7 @@ func NewAddConnectionDialog(a fyne.App, r interfaces.ErrorReporter, cl *fragment
 			eDb.SetText(dbMatch[1])
 		}
 		if portMatch := rPort.FindStringSubmatch(s); len(portMatch) == 2 {
-			p, err := strconv.ParseInt(portMatch[1], 0, 16)
-			if err != nil {
-				r.Report(err)
-				return 
-			}
-			ePort.SetText(strconv.Itoa(int(p)))
+			ePort.SetText(portMatch[1])
 		}
 		if userMatch := rUser.FindStringSubmatch(s); len(userMatch) == 2 {
 			eUser.SetText(userMatch[1])
@@ -62,9 +71,9 @@ func NewAddConnectionDialog(a fyne.App, r interfaces.ErrorReporter, cl *fragment
 	w := a.NewWindow("Add Connection")
 	f := &widget.Form{
 		Items: []*widget.FormItem{
-			{ Text: "Connection", Widget: eConnection},
+			{ Text: "Connection", Widget: eConnection, HintText: "Enter a connection string."},
 			{ Widget: s },
-			{ Text: "Name", Widget: eName},
+			{ Text: "Name", Widget: eName, HintText: "Name is required."},
 			{ Text: "Address", Widget: eAddress},
 			{ Text: "Database", Widget: eDb},
 			{ Text: "Port", Widget: ePort},
@@ -87,7 +96,7 @@ func NewAddConnectionDialog(a fyne.App, r interfaces.ErrorReporter, cl *fragment
 
 			p, err := strconv.ParseInt(ePort.Text, 0, 16)
 			if err != nil {
-				r.Report(err)
+				r.Report(errors.New("Invalid port"))
 				return 
 			}
 			
