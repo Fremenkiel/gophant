@@ -10,7 +10,7 @@ type Collapse struct {
 	widget.BaseWidget
 	button		*IconBox
 	list			*fyne.Container
-	open			bool
+	Opened			bool
 }
 
 func NewCollapse(button *IconBox, list []*IconBox) *Collapse {
@@ -21,7 +21,7 @@ func NewCollapse(button *IconBox, list []*IconBox) *Collapse {
 	}
 		li.Hide()
 
-	b := &Collapse{button: button, list: li, open: false	}
+	b := &Collapse{button: button, list: li, Opened: false	}
 	b.ExtendBaseWidget(b)
 	return b
 }
@@ -32,7 +32,7 @@ func (c *Collapse) CreateRenderer() fyne.WidgetRenderer {
 }
 
 func (c *Collapse) SetContent(list []*IconBox) {
-	if c.open {
+	if c.Opened {
 		c.list.Show()
 	} else {
 		c.list.Hide()
@@ -55,17 +55,17 @@ func (c *Collapse) SetHeader(text string, icon fyne.CanvasObject, l, d, r func(p
 }
 
 func (c *Collapse) Toggle() {
-	if c.open { c.Close() } else { c.Open() }
+	if c.Opened { c.Close() } else { c.Open() }
 }
 
 func (c *Collapse) Open() {
-	c.open = true
+	c.Opened = true
 	c.list.Show()
 	c.list.Refresh()
 }
 
 func (c *Collapse) Close() {
-	c.open = false
+	c.Opened = false
 	c.list.Hide()
 	c.list.Refresh()
 }

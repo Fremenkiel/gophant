@@ -17,10 +17,10 @@ type MainLayout struct {
 	ConnectionMenu	*menus.ConnectionMenu
 }
 
-func NewMainLayout(a fyne.App, w fyne.Window, ks *utils.KeyShortcutUtils, r interfaces.ErrorReporter) *MainLayout {
-	cm := menus.NewConnectionMenu(a, r, w)
-	l := fragments.NewConnectionList(a, r, cm)
-	acd := dialogs.NewAddConnectionDialog(a, r, l)
+func NewMainLayout(w fyne.Window, ks *utils.KeyShortcutUtils, r interfaces.ErrorReporter) *MainLayout {
+	cm := menus.NewConnectionMenu(r, w)
+	l := fragments.NewConnectionList(r, cm)
+	acd := dialogs.NewAddConnectionDialog(r, l)
 	ks.MapDefaultKeyBindings(acd.Window)
 
 	return &MainLayout{Sidebar: NewSidebar(r, acd, l), KeyShortcut: ks, ConnectionMenu: cm}

@@ -20,7 +20,8 @@ type AddConnectionDialog struct {
 	reporter				interfaces.ErrorReporter
 }
 
-func NewAddConnectionDialog(a fyne.App, r interfaces.ErrorReporter, cl *fragments.ConnectionList) *AddConnectionDialog {
+func NewAddConnectionDialog(r interfaces.ErrorReporter, cl *fragments.ConnectionList) *AddConnectionDialog {
+	a := fyne.CurrentApp()
 	rAddress := regexp.MustCompile(`[sS]erver=(?P<server>[^;]*);`)
 	rDb := regexp.MustCompile(`[dD]atabase=(?P<database>[^;]*);`)
 	rPort := regexp.MustCompile(`[pP]ort=(?P<port>[0-9]*);`)

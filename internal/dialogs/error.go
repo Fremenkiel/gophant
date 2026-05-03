@@ -12,7 +12,8 @@ type ErrorDialog struct {
 
 var _ interfaces.ErrorReporter = (*ErrorDialog)(nil)
 
-func NewErrorDialog(a fyne.App) *ErrorDialog {
+func NewErrorDialog() *ErrorDialog {
+	a := fyne.CurrentApp()
 	w := a.NewWindow("An error occurred")
 	w.Resize(fyne.NewSize(500, 400))
 

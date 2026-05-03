@@ -16,10 +16,10 @@ func main() {
 	w := a.NewWindow("Main page")
 	w.Resize(fyne.NewSize(1000, 800))
 
-	ed := dialogs.NewErrorDialog(a)
+	ed := dialogs.NewErrorDialog()
 
 	ks := utils.NewKeyShortcutUtils()
-	ls := layouts.NewMainLayout(a, w, ks, ed)
+	ls := layouts.NewMainLayout(w, ks, ed)
 
 	w.SetContent(ls.BuildLayout())
 	ls.KeyShortcut.MapDefaultKeyBindings(w)

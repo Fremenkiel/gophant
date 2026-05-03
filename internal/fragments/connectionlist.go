@@ -22,7 +22,7 @@ type ConnectionList struct {
 	reporter		interfaces.ErrorReporter
 }
 
-func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *ConnectionList {
+func NewConnectionList(r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *ConnectionList {
 	cl := &ConnectionList{Data: createSidebarElements(r), reporter: r}
 
 	cl.List = widget.NewList(
@@ -51,12 +51,11 @@ func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.Connect
 			lbl.SetHeader(d.Name, c,
 				nil,
 				func (pe *fyne.PointEvent) {
-					fetchDatabases(cl, h, lbl)
+					if lbl.Opened { lbl.Close() } else { fetchDatabases(cl, h, lbl) }
 				},
 				func(pe *fyne.PointEvent) {
 					cm.Open(pe.AbsolutePosition, h, cl.Refresh, cl.Reload)
 				})
-			fetchDatabases(cl, h, lbl)
 		},
 		)
 
@@ -96,8 +95,8 @@ func fetchDatabases(cl *ConnectionList, h *handlers.ConnectionHandler, lbl *elem
 
 	var ell []*elements.IconBox
 	for _, el := range dbs {
-		ell = append(ell, elements.NewIconBox(el.Name, nil, nil, nil, nil))
+		ell = append(ell, elements.NewIconBox(el.Name, nil, func(pe *fyne.PointEvent) {}, nil, nil))
 	}
 	lbl.SetContent(ell)
-	lbl.Toggle()
+	lbl.Open()
 }

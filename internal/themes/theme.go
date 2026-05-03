@@ -2,6 +2,7 @@ package themes
 
 import (
 	"image/color"
+	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/theme"
@@ -12,6 +13,7 @@ type GophantTheme struct {}
 var _ fyne.Theme = (*GophantTheme)(nil)
 
 func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
+	log.Print(name)
 	if name == theme.ColorNameBackground {
 		if variant == theme.VariantLight {
 			return color.White

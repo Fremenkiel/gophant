@@ -15,7 +15,7 @@ type ConnectionMenu struct {
 	reporter			interfaces.ErrorReporter
 }
 
-func NewConnectionMenu(a fyne.App, r interfaces.ErrorReporter, w fyne.Window) *ConnectionMenu {
+func NewConnectionMenu(r interfaces.ErrorReporter, w fyne.Window) *ConnectionMenu {
 	return &ConnectionMenu{Window: w, reporter: r}
 }
 
