@@ -42,16 +42,11 @@ func (i *IconBox) CreateRenderer() fyne.WidgetRenderer {
 	th := i.Theme()
 	v := fyne.CurrentApp().Settings().ThemeVariant()
 
-	/*
-	var c *fyne.Container
-		c = container.NewBorder(i.label, i.icon, nil, nil)
-*/
 	background := canvas.NewRectangle(th.Color(theme.ColorNameButton, v))
 	background.CornerRadius = th.Size(theme.SizeNameInputRadius)
 	tapBG := canvas.NewRectangle(color.Transparent)
 	i.tapAnim = newButtonTapAnimation(tapBG, i, th)
 	i.tapAnim.Curve = fyne.AnimationEaseOut
-	//i.tapAnim.Curve = fyne.AnimationEaseOut
 	objects := []fyne.CanvasObject{
 		background,
 		tapBG,
@@ -107,20 +102,11 @@ func (b *IconBox) MouseIn(*desktop.MouseEvent) {
 func (b *IconBox) MouseMoved(*desktop.MouseEvent) {
 }
 
-// MouseOut is called when a desktop pointer exits the widget
 func (b *IconBox) MouseOut() {
 	b.hovered = false
 	b.Refresh()
 }
 
-/*
-func (i *IconBox) Refresh() {
-	i.label.Refresh()
-	if i.icon != nil {
-		i.icon.Refresh()
-	}
-}
-*/
 
 type iconBoxRenderer struct {
 	BaseRenderer
@@ -140,7 +126,6 @@ func (r *iconBoxRenderer) MinSize() fyne.Size {
 func (r *iconBoxRenderer) Layout(size fyne.Size) {
 	r.background.Resize(size)
 	if !r.button.isAnimating {
-		// if we are animating let the animation control the tapBG size
 		r.tapBG.Resize(size)
 	}
 
@@ -193,13 +178,6 @@ func (r *iconBoxRenderer) Refresh() {
 func (r *iconBoxRenderer) buttonColorNames() (foreground, background, backgroundBlend fyne.ThemeColorName) {
 	foreground = theme.ColorNameForeground
 	b := r.button
-	/*
-	if b.Disabled() {
-		foreground = theme.ColorNameDisabled
-		if b.Importance != LowImportance {
-			background = theme.ColorNameDisabledButton
-		}
-	} else */
 	if b.focused {
 		backgroundBlend = theme.ColorNameFocus
 	} else if b.hovered {
@@ -231,7 +209,6 @@ func (r *iconBoxRenderer) buttonColorNames() (foreground, background, background
 }
 
 func blendColor(under, over color.Color) color.Color {
-	// This alpha blends with the over operator, and accounts for RGBA() returning alpha-premultiplied values
 	dstR, dstG, dstB, dstA := under.RGBA()
 	srcR, srcG, srcB, srcA := over.RGBA()
 
@@ -242,7 +219,7 @@ func blendColor(under, over color.Color) color.Color {
 	outR := srcR + uint32(float32(dstR)*(1-srcAlpha))
 	outG := srcG + uint32(float32(dstG)*(1-srcAlpha))
 	outB := srcB + uint32(float32(dstB)*(1-srcAlpha))
-	// We create an RGBA64 here because the color components are already alpha-premultiplied 16-bit values (they're just stored in uint32s).
+
 	return color.RGBA64{R: uint16(outR), G: uint16(outG), B: uint16(outB), A: uint16(outAlpha * 0xFFFF)}
 }
 
