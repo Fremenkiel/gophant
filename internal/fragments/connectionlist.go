@@ -24,6 +24,12 @@ type ConnectionList struct {
 
 func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *ConnectionList {
 	cl := &ConnectionList{Data: createSidebarElements(r), reporter: r}
+	el := []*elements.IconBox{
+		elements.NewIconBox("Test", nil, nil, nil, nil),
+		elements.NewIconBox("Test", nil, nil, nil, nil),
+		elements.NewIconBox("Test", nil, nil, nil, nil),
+		elements.NewIconBox("Test", nil, nil, nil, nil),
+	}
 
 	cl.List = widget.NewList(
 		func() int {
@@ -31,33 +37,34 @@ func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.Connect
 		},
 		func() fyne.CanvasObject {
 			c := canvas.NewCircle(themes.Palette.Background)
-			return elements.NewIconBox("Template", c, nil, nil, nil)
+			b := elements.NewIconBox("Header", c, nil, nil, nil)
+			return elements.NewCollapse(b, el)
 		},
 		func(lii widget.ListItemID, co fyne.CanvasObject) {
 			h := cl.Data[lii]
 			if h == nil {
 				log.Print("No Connection fould")
+				return 
 			}
 			d := h.Connection
-			lbl := co.(*elements.IconBox)
+			lbl := co.(*elements.Collapse)
 			sc := themes.Palette.Danger
 			if d.Status == models.ONLINE {
 				sc = themes.Palette.Success
 			}
 
 			c := canvas.NewCircle(sc)
-			lbl.SetContent(d.Name, c)
-			lbl.OnTapped = func(pe *fyne.PointEvent) {
-			}
-			lbl.OnTappedSecondary = func(pe *fyne.PointEvent) {
-				cm.Open(pe.AbsolutePosition, h, cl.Refresh, cl.Reload)
-			}
-			lbl.OnDoubleTapped = func (pe *fyne.PointEvent) {
-				h.GetDatabases(cl.Refresh)
-				log.Print("DT")
-			}
+			lbl.SetHeader(d.Name, c,
+				func(pe *fyne.PointEvent) {
+					cm.Open(pe.AbsolutePosition, h, cl.Refresh, cl.Reload)
+				},
+				func (pe *fyne.PointEvent) {
+					h.GetDatabases(cl.Refresh)
+					lbl.Open()
+				}, nil)
+			lbl.SetContent(el)
 		},
-	)
+		)
 
 	return cl
 }

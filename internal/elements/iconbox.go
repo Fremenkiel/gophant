@@ -2,6 +2,7 @@ package elements
 
 import (
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Fremenkiel/gophant/v2/internal/themes"
@@ -15,22 +16,29 @@ type IconBox struct {
 }
 
 func NewIconBox(text string, icon fyne.CanvasObject, l, d, r func(*fyne.PointEvent)) *IconBox {
-	icon.Resize(fyne.NewSize(12, 12))
+	if icon == nil {
+		icon = canvas.NewCircle(themes.Palette.Background)
+	}
+		icon.Resize(fyne.NewSize(12, 12))
+
 	b := &IconBox{label: widget.NewLabel(text), icon: container.NewGridWrap(fyne.NewSize(12, 12), icon), OnTapped: l, OnDoubleTapped: d, OnTappedSecondary: r}
 	b.ExtendBaseWidget(b)
 	return b
 }
 
 func (i *IconBox) CreateRenderer() fyne.WidgetRenderer {
-	c := container.New(&themes.IconBox{}, i.icon, i.label)
+	var c *fyne.Container
+		c = container.New(&themes.IconBox{}, i.label, i.icon)
 	return widget.NewSimpleRenderer(c)
 }
 
 func (i *IconBox) SetContent(text string, icon fyne.CanvasObject) {
 	i.label.SetText(text)
 
-	icon.Resize(fyne.NewSize(12, 12))
-	i.icon.Objects[0] = icon
+	if icon != nil {
+		icon.Resize(fyne.NewSize(12, 12))
+			i.icon.Objects[0] = icon
+	}
 
 	i.Refresh()
 }
@@ -55,5 +63,7 @@ func (i *IconBox) DoubleTapped(pe *fyne.PointEvent) {
 
 func (i *IconBox) Refresh() {
 	i.label.Refresh()
-	i.icon.Refresh()
+	if i.icon != nil {
+		i.icon.Refresh()
+	}
 }
