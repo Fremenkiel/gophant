@@ -24,12 +24,6 @@ type ConnectionList struct {
 
 func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *ConnectionList {
 	cl := &ConnectionList{Data: createSidebarElements(r), reporter: r}
-	el := []*elements.IconBox{
-		elements.NewIconBox("Test", nil, nil, nil, nil),
-		elements.NewIconBox("Test", nil, nil, nil, nil),
-		elements.NewIconBox("Test", nil, nil, nil, nil),
-		elements.NewIconBox("Test", nil, nil, nil, nil),
-	}
 
 	cl.List = widget.NewList(
 		func() int {
@@ -38,7 +32,7 @@ func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.Connect
 		func() fyne.CanvasObject {
 			c := canvas.NewCircle(themes.Palette.Background)
 			b := elements.NewIconBox("Header", c, nil, nil, nil)
-			return elements.NewCollapse(b, el)
+			return elements.NewCollapse(b, nil)
 		},
 		func(lii widget.ListItemID, co fyne.CanvasObject) {
 			h := cl.Data[lii]
@@ -55,14 +49,14 @@ func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.Connect
 
 			c := canvas.NewCircle(sc)
 			lbl.SetHeader(d.Name, c,
+				nil,
+				func (pe *fyne.PointEvent) {
+					fetchDatabases(cl, h, lbl)
+				},
 				func(pe *fyne.PointEvent) {
 					cm.Open(pe.AbsolutePosition, h, cl.Refresh, cl.Reload)
-				},
-				func (pe *fyne.PointEvent) {
-					h.GetDatabases(cl.Refresh)
-					lbl.Open()
-				}, nil)
-			lbl.SetContent(el)
+				})
+			fetchDatabases(cl, h, lbl)
 		},
 		)
 
@@ -95,4 +89,15 @@ func createSidebarElements(r interfaces.ErrorReporter) []*handlers.ConnectionHan
 		return true
 	})
 	return connections
+}
+
+func fetchDatabases(cl *ConnectionList, h *handlers.ConnectionHandler, lbl *elements.Collapse) {
+	dbs := h.GetDatabases(cl.Refresh)
+
+	var ell []*elements.IconBox
+	for _, el := range dbs {
+		ell = append(ell, elements.NewIconBox(el.Name, nil, nil, nil, nil))
+	}
+	lbl.SetContent(ell)
+	lbl.Toggle()
 }

@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"database/sql"
-	"log"
+	"strings"
 	"time"
 
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
@@ -68,16 +68,20 @@ func (h *ConnectionHandler) Disconnect() {
 	h.Connection.Status = models.OFFLINE
 }
 
-func (h *ConnectionHandler) GetDatabases(refresh func()) {
+func (h *ConnectionHandler) GetDatabases(refresh func()) []models.Database {
 	if h.c == nil || h.Connection.Status != models.ONLINE {
 		h.Connect()
 		refresh()
 	}
 
+	if len(h.db) > 0 {
+		return h.db
+	}
+
 	rows, err := h.c.Query("SELECT datname FROM pg_database;")
 	if err != nil {
 			h.reporter.Report(err)
-			return
+			return nil
 	}
 	defer rows.Close()
 
@@ -89,16 +93,18 @@ func (h *ConnectionHandler) GetDatabases(refresh func()) {
 		var db models.Database
 		if err := rows.Scan(&db.Name); err != nil {
 			h.reporter.Report(err)
-			return
+			return nil
 		}
+		if !strings.Contains(db.Name, "template") {
 		databases = append(databases, db)
+		}
 	}
 	if err = rows.Err(); err != nil {
 			h.reporter.Report(err)
-			return
+			return nil
 	}
 	h.db = databases
-	log.Print(databases)
+	return databases
 }
 
 func createConnection(cfg pq.Config) (*sql.DB, error) {

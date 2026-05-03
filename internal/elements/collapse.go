@@ -38,6 +38,11 @@ func (c *Collapse) SetContent(list []*IconBox) {
 		c.list.Hide()
 	}
 
+	c.list.RemoveAll()
+	for _, el := range list {
+		c.list.Add(el)
+	}
+
 	c.Refresh()
 }
 
