@@ -53,6 +53,7 @@ func NewConnectionList(a fyne.App, r interfaces.ErrorReporter, cm *menus.Connect
 				cm.Open(pe.AbsolutePosition, h, cl.Refresh, cl.Reload)
 			}
 			lbl.OnDoubleTapped = func (pe *fyne.PointEvent) {
+				h.GetDatabases(cl.Refresh)
 				log.Print("DT")
 			}
 		},
