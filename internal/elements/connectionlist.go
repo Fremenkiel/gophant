@@ -82,33 +82,19 @@ func (r *connectionListRenderer) MinSize() fyne.Size {
 		return fyne.NewSize(0, 0)
 	}
 
-	h := float32(10)
-	w := float32(10)
-
-	mh := float32(0)
-	for _, obj := range r.connections {
-		s := obj.Size()
-		if s.Height > mh {
-			mh = s.Height
-		}
-
-		w = w + s.Width
-	}
-	h = h + mh
-	w = w + float32((len(r.connections) - 1) * 5)
-
-	return fyne.NewSize(w, h)
+	h := float32(r.connections[0].MinSize().Height * 4)
+	return fyne.NewSize(0, h)
 }
 
 func (r *connectionListRenderer) Layout(size fyne.Size) {
 	r.background.Resize(size)
 
-	x := float32(5)
+	ch := float32(0)
 	for _, obj := range r.connections {
 		s := obj.MinSize()
-		obj.Resize(s)
-		obj.Move(fyne.NewPos(x, (size.Height - s.Height) / 2))
-		x = x + s.Width + 5
+		obj.Resize(fyne.NewSize(size.Width - 2, s.Height))
+		obj.Move(fyne.NewPos(1, ch))
+		ch = ch + s.Height
 	}
 }
 

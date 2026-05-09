@@ -109,7 +109,7 @@ type connectionButtonRenderer struct {
 }
 
 func (r *connectionButtonRenderer) MinSize() fyne.Size {
-	return r.label.MinSize()
+	return fyne.NewSize(0, r.icon.MinSize().Height)
 }
 
 func (r *connectionButtonRenderer) Layout(size fyne.Size) {
@@ -150,7 +150,7 @@ func (r *connectionButtonRenderer) applyTheme() {
 			bgColor = blendColor(bgColor, t.Color(bgBlendName, v))
 		}
 		bg.FillColor = bgColor
-		bg.CornerRadius = t.Size(theme.SizeNameInputRadius)
+		bg.CornerRadius = 0
 		bg.Refresh()
 	}
 

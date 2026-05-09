@@ -108,6 +108,10 @@ func (b *SidebarTab) MouseOut() {
 	b.Refresh()
 }
 
+func (t *SidebarTab) SetFocus(focus bool) {
+	t.focused = focus;
+}
+
 func (b *SidebarTab) createIcon(c fyne.ThemeColorName) *canvas.Image {
 	res := b.icon
 	s := fyne.NewSize(14, 14)

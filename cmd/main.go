@@ -4,7 +4,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
-	"github.com/Fremenkiel/gophant/v2/internal/layouts"
+	"github.com/Fremenkiel/gophant/v2/internal/fragments"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 	"github.com/Fremenkiel/gophant/v2/internal/utils"
 )
@@ -21,7 +21,7 @@ func main() {
 
 	ed := dialogs.NewErrorDialog()
 
-	ls := layouts.NewMainLayout(w, ed)
+	ls := fragments.NewMainLayout(w, ed)
 
 	w.SetContent(ls.BuildLayout())
 	utils.MapMainKeyBindings(w)

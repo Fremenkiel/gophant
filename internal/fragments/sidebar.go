@@ -1,21 +1,21 @@
-package layouts
+package fragments
 
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"github.com/Fremenkiel/gophant/v2/internal/containers"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
-	"github.com/Fremenkiel/gophant/v2/internal/fragments"
 	"github.com/Fremenkiel/gophant/v2/internal/fs"
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 )
 
 func NewSidebar(w fyne.Window, r interfaces.ErrorReporter) *fyne.Container {
-	sc := fragments.NewSchemaView(w, r)
-	qu := fragments.NewQueryView(w, r)
-	hi := fragments.NewHistoryView(w, r)
+	sc := NewSchemaView(w, r)
+	qu := NewQueryView(w, r)
+	hi := NewHistoryView(w, r)
 
-	toolbar := elements.NewSidebarTabContainer(
+	toolbar := containers.NewSidebarTab(
 		func(i int) {
 			sc.Hide()
 			qu.Hide()
@@ -36,11 +36,13 @@ func NewSidebar(w fyne.Window, r interfaces.ErrorReporter) *fyne.Container {
 		)
 
 
-	return container.New(&th.Sidebar{},
+	c := container.New(&th.Sidebar{},
 		toolbar,
 		sc,
 		qu,
 		hi,
 		)
+
+	return c
 }
 
