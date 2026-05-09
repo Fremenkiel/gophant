@@ -21,11 +21,10 @@ func main() {
 
 	ed := dialogs.NewErrorDialog()
 
-	ks := utils.NewKeyShortcutUtils()
-	ls := layouts.NewMainLayout(w, ks, ed)
+	ls := layouts.NewMainLayout(w, ed)
 
 	w.SetContent(ls.BuildLayout())
-	ls.KeyShortcut.MapMainKeyBindings(w)
+	utils.MapMainKeyBindings(w)
 
 	w.Show()	
 	a.Run()

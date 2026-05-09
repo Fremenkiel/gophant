@@ -9,12 +9,16 @@ import (
 
 type SidebarTabContainer struct {
 	widget.BaseWidget
+
 	tabs []*SidebarTab
+
 	selected int
+
+	ChangeView	func(index int)
 }
 
-func NewSidebarTabContainer(items ...*SidebarTab) *SidebarTabContainer {
-	c := &SidebarTabContainer{tabs: items, selected: -1}
+func NewSidebarTabContainer(changeView func(int), items ...*SidebarTab) *SidebarTabContainer {
+	c := &SidebarTabContainer{tabs: items, selected: -1, ChangeView: changeView}
 	c.ExtendBaseWidget(c)
 	return c
 }
@@ -55,6 +59,7 @@ func (c *SidebarTabContainer) SetSelected(index int) {
 	c.selected = index
 	c.tabs[index].focused = true
 	c.tabs[index].Refresh()
+	c.ChangeView(index)
 	c.Refresh()
 }
 

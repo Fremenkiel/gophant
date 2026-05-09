@@ -3,7 +3,6 @@ package layouts
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/fragments"
 	"github.com/Fremenkiel/gophant/v2/internal/fs"
@@ -11,37 +10,37 @@ import (
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 )
 
-type Sidebar struct {
-	AddConnectionDialog		*dialogs.AddConnectionDialog
-	ConnectionList				*fragments.ConnectionList
-
-	reporter							interfaces.ErrorReporter
-}
-
-func NewSidebar(r interfaces.ErrorReporter, acd *dialogs.AddConnectionDialog, cl *fragments.ConnectionList) *Sidebar {
-	return &Sidebar{AddConnectionDialog: acd, ConnectionList: cl, reporter: r}
-}
-
-func (s *Sidebar) BuildSidebar() *fyne.Container {
-	scroll := container.NewVScroll(container.NewHScroll(s.ConnectionList.List))
+func NewSidebar(w fyne.Window, r interfaces.ErrorReporter) *fyne.Container {
+	sc := fragments.NewSchemaView(w, r)
+	qu := fragments.NewQueryView(w, r)
+	hi := fragments.NewHistoryView(w, r)
 
 	toolbar := elements.NewSidebarTabContainer(
+		func(i int) {
+			sc.Hide()
+			qu.Hide()
+			hi.Hide()
+
+			switch i {
+			case 0:
+				sc.Show()
+			case 1:
+				qu.Show()
+			case 2:
+				hi.Show()
+			}
+		},
 		elements.NewSidebarTab("Schema", fs.IconNameDB, nil),
 		elements.NewSidebarTab("Queries", fs.IconNameBookmark, nil),
 		elements.NewSidebarTab("History", fs.IconNameHistory, nil),
 		)
-	/*
-	toolbar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
-			s.AddConnectionDialog.Open()
-		}),
-		)
-	*/
 
 
 	return container.New(&th.Sidebar{},
 		toolbar,
-		scroll,
+		sc,
+		qu,
+		hi,
 		)
 }
 

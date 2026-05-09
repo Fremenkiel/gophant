@@ -1,17 +1,13 @@
 package fragments
 
 import (
-	"log"
-
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/handlers"
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/menus"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
-	"github.com/Fremenkiel/gophant/v2/internal/th"
 	"github.com/Jipok/go-persist"
 )
 
@@ -22,42 +18,15 @@ type ConnectionList struct {
 	reporter		interfaces.ErrorReporter
 }
 
-func NewConnectionList(r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *ConnectionList {
-	cl := &ConnectionList{Data: createSidebarElements(r), reporter: r}
+func NewConnectionList(r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *elements.ConnectionList {
+	connections := createSidebarElements(r)
 
-	cl.List = widget.NewList(
-		func() int {
-			return len(cl.Data)
-		},
-		func() fyne.CanvasObject {
-			c := canvas.NewCircle(th.Palette.Background)
-			b := elements.NewIconBox("Header", c, nil, nil, nil)
-			return elements.NewCollapse(b, nil)
-		},
-		func(lii widget.ListItemID, co fyne.CanvasObject) {
-			h := cl.Data[lii]
-			if h == nil {
-				log.Print("No Connection fould")
-				return 
-			}
-			d := h.Connection
-			lbl := co.(*elements.Collapse)
-			sc := th.Palette.Danger
-			if d.Status == models.ONLINE {
-				sc = th.Palette.Success
-			}
+	var cb []*elements.ConnectionButton
+	for _, obj := range connections {
+		cb = append(cb, elements.NewConnectionButton(obj, nil, nil, nil))
+	}
 
-			c := canvas.NewCircle(sc)
-			lbl.SetHeader(d.Name, c,
-				nil,
-				func (pe *fyne.PointEvent) {
-					if lbl.Opened { lbl.Close() } else { cl.fetchDatabases(h, lbl) }
-				},
-				func(pe *fyne.PointEvent) {
-					cm.Open(pe.AbsolutePosition, h, cl.Refresh, cl.Reload)
-				})
-		},
-		)
+	cl := elements.NewConnectionList(nil, cb)
 
 	return cl
 }

@@ -20,14 +20,15 @@ func (s *Sidebar) MinSize(objects []fyne.CanvasObject) fyne.Size {
 
 func (s *Sidebar) Layout(objects []fyne.CanvasObject, containerSize fyne.Size) {
 	pos := fyne.NewPos(0, 0)
-	toolbar := objects[0]
-	size := toolbar.MinSize()
-	toolbar.Resize(size)
-	toolbar.Move(pos)
+	t := objects[0]
+	ts := t.MinSize()
+	t.Resize(ts)
+	t.Move(pos)
 
-	pos = pos.Add(fyne.NewPos(0, size.Height))
-	size = fyne.NewSize(containerSize.Width, containerSize.Height - size.Height)
-	scroll := objects[1]
-	scroll.Resize(size)
-	scroll.Move(pos)
+	for _, obj := range objects[1:] {
+		pos = fyne.NewPos(0, ts.Height)
+		os := fyne.NewSize(containerSize.Width, containerSize.Height - ts.Height)
+		obj.Resize(os)
+		obj.Move(pos)
+	}
 }
