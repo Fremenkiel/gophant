@@ -87,7 +87,7 @@ func (r *sidebarTabRenderer) MinSize() fyne.Size {
 		return fyne.NewSize(0, 0)
 	}
 
-	h := float32(10)
+	h := float32(16)
 	w := float32(10)
 
 	mh := float32(0)

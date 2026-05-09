@@ -15,6 +15,7 @@ const (
 	ColorNameIcon = "ColorNameIcon"
 	ColorNameText = "ColorNameText"
 	ColorNameButtonForeground = "ColorNameButtonForeground"
+	ColorNameButtonHover = "ColorNameButtonHover"
 	ColorNameFocusText = "ColorNameFocusText"
 	ColorNameTransparent = "ColorNameTransparent"
 )
@@ -66,6 +67,11 @@ func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant
 			return theme.DefaultTheme().Color(name, variant)
 		}
 		return color.RGBA{168, 168, 178, 255}
+	case ColorNameButtonHover:
+		if variant == theme.VariantLight {
+			return theme.DefaultTheme().Color(name, variant)
+		}
+		return color.RGBA{19, 19, 24, 255}
 	case ColorNameFocusText:
 		if variant == theme.VariantLight {
 			return color.RGBA{0, 0, 0, 255}
