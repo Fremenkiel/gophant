@@ -1,4 +1,4 @@
-package utils
+package col
 
 import "image/color"
 

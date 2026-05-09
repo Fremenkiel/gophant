@@ -5,13 +5,13 @@ import (
 	"fyne.io/fyne/v2/app"
 	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/layouts"
-	"github.com/Fremenkiel/gophant/v2/internal/themes"
+	"github.com/Fremenkiel/gophant/v2/internal/th"
 	"github.com/Fremenkiel/gophant/v2/internal/utils"
 )
 
 func main() {
 	a := app.New()
-	a.Settings().SetTheme(&themes.GophantTheme{})
+	a.Settings().SetTheme(&th.GophantTheme{})
 
 	w := a.NewWindow("Main page")
 	w.Resize(fyne.NewSize(1000, 800))

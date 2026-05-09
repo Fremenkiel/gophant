@@ -31,7 +31,7 @@ func (c *Collapse) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(co)
 }
 
-func (c *Collapse) SetContent(list []*IconBox) {
+func (c *Collapse) SetContent(list []*Collapse) {
 	if c.Opened {
 		c.list.Show()
 	} else {

@@ -11,7 +11,7 @@ import (
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/menus"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
-	"github.com/Fremenkiel/gophant/v2/internal/themes"
+	"github.com/Fremenkiel/gophant/v2/internal/th"
 	"github.com/Jipok/go-persist"
 )
 
@@ -30,7 +30,7 @@ func NewConnectionList(r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *Co
 			return len(cl.Data)
 		},
 		func() fyne.CanvasObject {
-			c := canvas.NewCircle(themes.Palette.Background)
+			c := canvas.NewCircle(th.Palette.Background)
 			b := elements.NewIconBox("Header", c, nil, nil, nil)
 			return elements.NewCollapse(b, nil)
 		},
@@ -42,16 +42,16 @@ func NewConnectionList(r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *Co
 			}
 			d := h.Connection
 			lbl := co.(*elements.Collapse)
-			sc := themes.Palette.Danger
+			sc := th.Palette.Danger
 			if d.Status == models.ONLINE {
-				sc = themes.Palette.Success
+				sc = th.Palette.Success
 			}
 
 			c := canvas.NewCircle(sc)
 			lbl.SetHeader(d.Name, c,
 				nil,
 				func (pe *fyne.PointEvent) {
-					if lbl.Opened { lbl.Close() } else { fetchDatabases(cl, h, lbl) }
+					if lbl.Opened { lbl.Close() } else { cl.fetchDatabases(h, lbl) }
 				},
 				func(pe *fyne.PointEvent) {
 					cm.Open(pe.AbsolutePosition, h, cl.Refresh, cl.Reload)
@@ -90,13 +90,23 @@ func createSidebarElements(r interfaces.ErrorReporter) []*handlers.ConnectionHan
 	return connections
 }
 
-func fetchDatabases(cl *ConnectionList, h *handlers.ConnectionHandler, lbl *elements.Collapse) {
-	dbs := h.GetDatabases(cl.Refresh)
+func (c *ConnectionList) fetchDatabases(h *handlers.ConnectionHandler, lbl *elements.Collapse) {
+	dbs := h.GetDatabases(c.Refresh)
 
-	var ell []*elements.IconBox
+	var ell []*elements.Collapse
 	for _, el := range dbs {
-		ell = append(ell, elements.NewIconBox(el.Name, nil, func(pe *fyne.PointEvent) {}, nil, nil))
+		ib := elements.NewIconBox(el.Name, nil,
+			func(pe *fyne.PointEvent) {}, 
+			nil, nil)
+		cl := elements.NewCollapse(ib, nil)
+		ib.OnDoubleTapped = func(pe *fyne.PointEvent) {
+				c.fetchDatabase(h, cl)
+			}
+		ell = append(ell, cl)
 	}
 	lbl.SetContent(ell)
 	lbl.Open()
+}
+
+func (c *ConnectionList) fetchDatabase(h *handlers.ConnectionHandler, lbl *elements.Collapse) {
 }

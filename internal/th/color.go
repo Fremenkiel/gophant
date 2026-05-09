@@ -1,4 +1,4 @@
-package themes
+package th
 
 import "image/color"
 

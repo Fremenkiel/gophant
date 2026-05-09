@@ -1,4 +1,4 @@
-package themes
+package th
 
 import "fyne.io/fyne/v2"
 

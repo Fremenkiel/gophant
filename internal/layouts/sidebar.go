@@ -3,12 +3,11 @@ package layouts
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/v2/widget"
 	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
+	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/fragments"
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
-	"github.com/Fremenkiel/gophant/v2/internal/themes"
+	"github.com/Fremenkiel/gophant/v2/internal/th"
 )
 
 type Sidebar struct {
@@ -25,14 +24,17 @@ func NewSidebar(r interfaces.ErrorReporter, acd *dialogs.AddConnectionDialog, cl
 func (s *Sidebar) BuildSidebar() *fyne.Container {
 	scroll := container.NewVScroll(container.NewHScroll(s.ConnectionList.List))
 
+	toolbar := container.NewVBox(elements.NewSidebarTab("Schema", "db.svg", nil))
+	/*
 	toolbar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
 			s.AddConnectionDialog.Open()
 		}),
 		)
+	*/
 
 
-	return container.New(&themes.Sidebar{},
+	return container.New(&th.Sidebar{},
 		toolbar,
 		scroll,
 		)
