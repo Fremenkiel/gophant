@@ -38,7 +38,7 @@ func NewSidebarTab(text, icon string, l func(*fyne.PointEvent)) *SidebarTab {
 	res := fyne.NewStaticResource(icon, c)
 
 	t := canvas.NewText(text, nil)
-	t.TextSize = 11
+	t.TextSize = 12
 
 	b := &SidebarTab{label: t, icon: res}
 	b.ExtendBaseWidget(b)
@@ -57,7 +57,7 @@ func (i *SidebarTab) CreateRenderer() fyne.WidgetRenderer {
 	i.tapAnim = newButtonTapAnimation(tapBG, i, t)
 	i.tapAnim.Curve = fyne.AnimationEaseOut
 
-	icon := container.NewGridWrap(fyne.NewSize(12, 12), i.createIcon(th.ColorNameButtonForeground))
+	icon := container.NewGridWrap(fyne.NewSize(14, 14), i.createIcon(th.ColorNameButtonForeground))
 
 	objects := []fyne.CanvasObject{
 		background,
@@ -110,9 +110,9 @@ func (b *SidebarTab) MouseOut() {
 
 func (b *SidebarTab) createIcon(c fyne.ThemeColorName) *canvas.Image {
 	res := b.icon
-	s := fyne.NewSize(12, 12)
+	s := fyne.NewSize(14, 14)
 
-	t := th.NewColoredResource(res, theme.ColorNameBackground, c)
+	t := th.NewColoredResource(res, th.ColorNameTransparent, c)
 	i := canvas.NewImageFromResource(t)
 	i.Resize(s)
 	return i
@@ -131,8 +131,8 @@ type sidebarTabRenderer struct {
 }
 
 func (r *sidebarTabRenderer) MinSize() fyne.Size {
-	h := r.button.label.MinSize().Height
-	w := r.button.label.MinSize().Width + r.icon.MinSize().Width + 15
+	h := r.icon.MinSize().Height + 15
+	w := r.button.label.MinSize().Width + r.icon.MinSize().Width + 25
 	return fyne.NewSize(w, h)
 }
 
@@ -148,13 +148,13 @@ func (r *sidebarTabRenderer) Layout(size fyne.Size) {
 	is := fyne.NewSize(0, 0)
 	if ic != nil {
 		is = ic.MinSize()
-		ip := fyne.NewPos(5, (size.Height - is.Height) / 2)
+		ip := fyne.NewPos(10, (size.Height - is.Height) / 2)
 		ic.Resize(is)
 		ic.Move(ip)
 	}
 
 	ls := l.MinSize()
-	lp := fyne.NewPos(10 + is.Width, 0)
+	lp := fyne.NewPos(10 + is.Width + 5, (size.Height - ls.Height) / 2)
 	l.Resize(ls)
 	l.Move(lp)
 }

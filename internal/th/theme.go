@@ -16,6 +16,7 @@ const (
 	ColorNameText = "ColorNameText"
 	ColorNameButtonForeground = "ColorNameButtonForeground"
 	ColorNameFocusText = "ColorNameFocusText"
+	ColorNameTransparent = "ColorNameTransparent"
 )
 
 func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
@@ -30,12 +31,21 @@ func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant
 			return theme.DefaultTheme().Color(name, variant)
 		}
 		return color.RGBA{168, 168, 178, 255}
+	case theme.ColorNameFocus:
+		if variant == theme.VariantLight {
+			return theme.DefaultTheme().Color(name, variant)
+		}
+		return color.RGBA{24, 24, 31, 255}
+	case theme.ColorNameHover:
+		if variant == theme.VariantLight {
+			return theme.DefaultTheme().Color(name, variant)
+		}
+		return color.RGBA{20, 20, 26, 255}
 	case theme.ColorNameSeparator:
 		if variant == theme.VariantLight {
 			return theme.DefaultTheme().Color(name, variant)
 		}
-		return color.RGBA{225, 50, 50, 255}
-		// return color.RGBA{26, 26, 33, 0}
+		return color.RGBA{26, 26, 33, 255}
 	case theme.ColorNameButton:
 		if variant == theme.VariantLight {
 			return theme.DefaultTheme().Color(name, variant)
@@ -61,6 +71,8 @@ func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant
 			return color.RGBA{0, 0, 0, 255}
 		}
 		return color.RGBA{255, 255, 255, 255}
+	case ColorNameTransparent:
+		return color.Transparent
 	}
 
 	return theme.DefaultTheme().Color(name, variant)

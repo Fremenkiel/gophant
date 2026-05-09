@@ -15,6 +15,9 @@ func main() {
 
 	w := a.NewWindow("Main page")
 	w.Resize(fyne.NewSize(1000, 800))
+	w.SetPadded(false)
+	w.SetMainMenu(fyne.NewMainMenu(fyne.NewMenu("test", fyne.NewMenuItem("test.action", func() {}))))
+	w.SetMaster()
 
 	ed := dialogs.NewErrorDialog()
 
@@ -22,9 +25,9 @@ func main() {
 	ls := layouts.NewMainLayout(w, ks, ed)
 
 	w.SetContent(ls.BuildLayout())
-	ls.KeyShortcut.MapDefaultKeyBindings(w)
-	w.Show()
-	
+	ls.KeyShortcut.MapMainKeyBindings(w)
+
+	w.Show()	
 	a.Run()
 }
 

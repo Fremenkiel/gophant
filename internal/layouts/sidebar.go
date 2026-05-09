@@ -6,6 +6,7 @@ import (
 	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/fragments"
+	"github.com/Fremenkiel/gophant/v2/internal/fs"
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 )
@@ -24,7 +25,11 @@ func NewSidebar(r interfaces.ErrorReporter, acd *dialogs.AddConnectionDialog, cl
 func (s *Sidebar) BuildSidebar() *fyne.Container {
 	scroll := container.NewVScroll(container.NewHScroll(s.ConnectionList.List))
 
-	toolbar := container.NewVBox(elements.NewSidebarTab("Schema", "db.svg", nil))
+	toolbar := elements.NewSidebarTabContainer(
+		elements.NewSidebarTab("Schema", fs.IconNameDB, nil),
+		elements.NewSidebarTab("Queries", fs.IconNameBookmark, nil),
+		elements.NewSidebarTab("History", fs.IconNameHistory, nil),
+		)
 	/*
 	toolbar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {

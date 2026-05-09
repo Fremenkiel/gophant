@@ -17,3 +17,10 @@ func (s *KeyShortcutUtils) MapDefaultKeyBindings(w fyne.Window) {
 		w.Hide()
 	})
 } 
+
+func (s *KeyShortcutUtils) MapMainKeyBindings(w fyne.Window) {
+	closeKey := desktop.CustomShortcut{KeyName: fyne.KeyW, Modifier: fyne.KeyModifierShortcutDefault }
+	w.Canvas().AddShortcut(&closeKey, func(shortcut fyne.Shortcut) {
+		w.Close()
+	})
+} 
