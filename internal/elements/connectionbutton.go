@@ -9,7 +9,6 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/Fremenkiel/gophant/v2/internal/handlers"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 )
 
@@ -28,14 +27,14 @@ type ConnectionButton struct {
 	isAnimating      bool
 }
 
-func NewConnectionButton(handler *handlers.ConnectionHandler, l, d, r func(*fyne.PointEvent)) *ConnectionButton {
-	t := canvas.NewText(handler.Connection.Name, nil)
+func NewConnectionButton(name, role string, l, d, r func(*fyne.PointEvent)) *ConnectionButton {
+	t := canvas.NewText(name, nil)
 	t.TextSize = 12
 
 	i := canvas.NewCircle(th.Palette.Disabled)
 	i.Resize(fyne.NewSize(6, 6))
 
-	pt := canvas.NewText(handler.Connection.Permission, nil)
+	pt := canvas.NewText(role, nil)
 	pt.TextSize = 10
 
 	b := &ConnectionButton{label: t, icon: container.NewGridWrap(fyne.NewSize(6, 6), i), pLabel: pt, OnTapped: l, OnDoubleTapped: d, OnTappedSecondary: r}
@@ -119,6 +118,11 @@ func (b *ConnectionButton) MouseUp(pe *desktop.MouseEvent) {}
 
 func (t *ConnectionButton) SetFocus(focus bool) {
 	t.focused = focus;
+}
+
+func (b *ConnectionButton) SetContent(name, role string) {
+	b.label.Text = name
+	b.pLabel.Text = role
 }
 
 type connectionButtonRenderer struct {

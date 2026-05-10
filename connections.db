@@ -47,3 +47,9 @@ S :019dc868-266f-7839-a466-16a9f81adfba
 {"ID":"019dc868-266f-7839-a466-16a9f81adfba","Name":"bb","Address":"localhost","Port":5432,"Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE"}
 S :019dc868-266f-7839-a466-16a9f81adfba
 {"ID":"019dc868-266f-7839-a466-16a9f81adfba","Name":"bb","Address":"localhost","Port":5432,"Database":"bookingboard","Username":"bookingboard","Password":"bookingboard","Status":"OFFLINE","Permission":"rw"}
+S :019e10cb-940c-754f-a312-5392b066349d
+{"ID":"019e10cb-940c-754f-a312-5392b066349d","Name":"test","Permission":"ro","Address":"test","Port":1234,"Database":"test","Username":"","Password":"","Status":"OFFLINE"}
+S :019e10de-a4e1-740b-9545-e51cac742c57
+{"ID":"019e10de-a4e1-740b-9545-e51cac742c57","Name":"test1","Permission":"ro","Address":"test","Port":1234,"Database":"rtest","Username":"","Password":"","Status":"OFFLINE"}
+S :019e10e3-01e7-7d84-95c5-0b986bab3a43
+{"ID":"019e10e3-01e7-7d84-95c5-0b986bab3a43","Name":"test2","Permission":"ro","Address":"test","Port":1234,"Database":"test","Username":"","Password":"","Status":"OFFLINE"}

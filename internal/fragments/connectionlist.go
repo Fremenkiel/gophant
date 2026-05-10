@@ -3,6 +3,7 @@ package fragments
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/handlers"
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
@@ -21,12 +22,23 @@ type ConnectionList struct {
 func NewConnectionList(r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *elements.ConnectionList {
 	connections := createSidebarElements(r)
 
+
 	var cb []*elements.ConnectionButton
 	for _, obj := range connections {
-		cb = append(cb, elements.NewConnectionButton(obj, nil, nil, nil))
+		cb = append(cb, elements.NewConnectionButton(obj.Connection.Name, obj.Connection.Permission, nil, nil, nil))
 	}
 
-	cl := elements.NewConnectionList(nil, cb)
+	cl := elements.NewConnectionList(cb, nil, nil)
+	acd := dialogs.NewAddConnectionDialog(r,
+		func(connection models.Connection) {
+			h := handlers.NewConnectionHandler(r, &connection)
+			cb = append(cb, elements.NewConnectionButton(h.Connection.Name, h.Connection.Permission, nil, nil, nil))
+			cl.SetContent(cb)
+		})
+
+	cl.AddConnection = func(pe *fyne.PointEvent) {
+		acd.Open()
+	}
 
 	return cl
 }

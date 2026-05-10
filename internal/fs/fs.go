@@ -7,7 +7,7 @@ var StaticFS embed.FS
 
 const (
 	IconNameAction = "action.svg"
-	IconNameAdd = "ad.svg"
+	IconNameAdd = "add.svg"
 	IconNameBookmark = "bookmark.svg"
 	IconNameBranch = "branch.svg"
 	IconNameCheck = "check.svg"

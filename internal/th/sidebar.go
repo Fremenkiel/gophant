@@ -25,11 +25,11 @@ func (s *Sidebar) Layout(objects []fyne.CanvasObject, containerSize fyne.Size) {
 	t.Resize(fyne.NewSize(containerSize.Width, ts.Height))
 	t.Move(pos)
 
-	cPos := fyne.NewPos(0, ts.Height)
+	cPos := fyne.NewPos(0, ts.Height - 1)
 	for _, obj := range objects[1:] {
 		s := obj.MinSize()
 		obj.Resize(fyne.NewSize(containerSize.Width, s.Height))
 		obj.Move(cPos)
-		cPos = fyne.NewPos(0, pos.Y + s.Height)
+		cPos = fyne.NewPos(0, pos.Y + s.Height - 1)
 	}
 }

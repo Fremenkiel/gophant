@@ -5,76 +5,38 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/Fremenkiel/gophant/v2/internal/fs"
-	"github.com/Fremenkiel/gophant/v2/internal/th"
 )
 
-type ConnectionList struct {
+type List struct {
 	widget.BaseWidget
 
-	connections []*ConnectionButton
-
-	selected int
-
-	ChangeView	func(index int)
-	AddConnection func(*fyne.PointEvent)
+	Length	func() int
+	RenderItem	func(lii widget.ListItemID, co fyne.CanvasObject)
 }
 
-func NewConnectionList(items []*ConnectionButton, changeView func(int), addConnection func(*fyne.PointEvent)) *ConnectionList {
-	c := &ConnectionList{
-		connections: items,
-		selected: -1,
-		ChangeView: changeView,
-		AddConnection: addConnection,
+func NewList(length func() int, renderItem func(lii widget.ListItemID, co fyne.CanvasObject)) *List {
+	c := &List{
+		Length: length,
+		RenderItem: renderItem,
 	}
 	c.ExtendBaseWidget(c)
 	return c
 }
 
-func (c *ConnectionList) CreateRenderer() fyne.WidgetRenderer {
-	c.ExtendBaseWidget(c)
-	t := c.Theme()
+func (l *List) CreateRenderer() fyne.WidgetRenderer {
+	l.ExtendBaseWidget(l)
+	t := l.Theme()
 	v := fyne.CurrentApp().Settings().ThemeVariant()
 
 	background := canvas.NewRectangle(t.Color(theme.ColorNameButton, v))
 	background.CornerRadius = t.Size(theme.SizeNameInputRadius)
 
-	header := canvas.NewText("CONNECTIONS", th.Palette.SecondaryText)
-	header.TextSize = 10
-
-	ab := NewIconButton(fs.IconNameAdd,
-		func(pe *fyne.PointEvent) {
-			c.AddConnection(pe)
-		})
-
-	l := widget.NewList(
-		func() int {
-			return len(c.connections)
-		},
-		func() fyne.CanvasObject {
-			return NewConnectionButton("Template", "ro", nil, nil, nil)
-		},
-		func(lii widget.ListItemID, co fyne.CanvasObject) {
-			b := c.connections[lii]
-			b.OnTapped = func(pe *fyne.PointEvent) {
-			c.SetSelected(lii)
-			}
-			co.(*ConnectionButton).SetContent(b.label.Text, b.pLabel.Text)
-		},
-		)
-
 	objects := []fyne.CanvasObject{
 		background,
-		header,
-		ab,
-		l,
 	}
 
-	r := &connectionListRenderer{
+	r := &listRenderer{
 		BaseRenderer: NewBaseRenderer(objects),
-		header: header,
-		addButton: ab,
-		cList: c,
 		list: l,
 		background: background,
 	}
@@ -82,12 +44,12 @@ func (c *ConnectionList) CreateRenderer() fyne.WidgetRenderer {
 	return r
 }
 
-func (c *ConnectionList) SetContent(items	[]*ConnectionButton) {
+func (c *List) SetContent(items	[]*ConnectionButton) {
 	c.connections = items
 	c.Refresh()
 }
 
-func (c *ConnectionList) SetSelected(index int) {
+func (c *List) SetSelected(index int) {
 	if c.selected != -1 {
 		c.connections[c.selected].focused = false
 		c.connections[c.selected].Refresh()
@@ -101,18 +63,15 @@ func (c *ConnectionList) SetSelected(index int) {
 	c.Refresh()
 }
 
-type connectionListRenderer struct {
+type listRenderer struct {
 	BaseRenderer
 
 	background *canvas.Rectangle
-	header				*canvas.Text
-	addButton				*IconButton
-	cList			*ConnectionList
-	list			*widget.List
+	list			*List
 	layout     fyne.Layout
 }
 
-func (r *connectionListRenderer) MinSize() fyne.Size {
+func (r *listRenderer) MinSize() fyne.Size {
 	hs := r.header.MinSize()
 
 	h := hs.Height + 25
@@ -125,7 +84,7 @@ func (r *connectionListRenderer) MinSize() fyne.Size {
 	return fyne.NewSize(0, h)
 }
 
-func (r *connectionListRenderer) Layout(size fyne.Size) {
+func (r *listRenderer) Layout(size fyne.Size) {
 	r.background.Resize(size)
 
 	h := r.header
@@ -144,7 +103,7 @@ func (r *connectionListRenderer) Layout(size fyne.Size) {
 	l.Move(fyne.NewPos(1, ch))
 }
 
-func (r *connectionListRenderer) applyTheme() {
+func (r *listRenderer) applyTheme() {
 	t := fyne.CurrentApp().Settings().Theme()
 	v := fyne.CurrentApp().Settings().ThemeVariant()
 
@@ -155,7 +114,7 @@ func (r *connectionListRenderer) applyTheme() {
 	}
 }
 
-func (r *connectionListRenderer) Refresh() {
+func (r *listRenderer) Refresh() {
 	/*
 	objects := []fyne.CanvasObject{
 		r.background,

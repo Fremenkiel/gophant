@@ -7,7 +7,6 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
-	"github.com/Fremenkiel/gophant/v2/internal/fragments"
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Jipok/go-persist"
@@ -16,11 +15,12 @@ import (
 
 type AddConnectionDialog struct {
 	Window					fyne.Window
-	ConnectionList	*fragments.ConnectionList
 	reporter				interfaces.ErrorReporter
+
+	Refresh					func(models.Connection)
 }
 
-func NewAddConnectionDialog(r interfaces.ErrorReporter, cl *fragments.ConnectionList) *AddConnectionDialog {
+func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Connection)) *AddConnectionDialog {
 	a := fyne.CurrentApp()
 	rAddress := regexp.MustCompile(`[sS]erver=(?P<server>[^;]*);`)
 	rDb := regexp.MustCompile(`[dD]atabase=(?P<database>[^;]*);`)
@@ -80,6 +80,7 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, cl *fragments.Connection
 			{ Text: "Port", Widget: ePort},
 			{ Text: "Username", Widget: eUser},
 			{ Text: "Password", Widget: ePass},
+			{ Text: "Default role", Widget: ePass},
 		},
 		OnSubmit: func() {
 			connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
@@ -100,18 +101,21 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, cl *fragments.Connection
 				r.Report(errors.New("Invalid port"))
 				return 
 			}
-			
-			connections.Set(id.String(), models.Connection{
+
+			c := models.Connection{
 				ID: &id,
 				Name: eName.Text,
 				Address: eAddress.Text,
+				Permission: "ro",
 				Port: uint16(p),
 				Database: eDb.Text,
 				Username: eUser.Text,
 				Password: ePass.Text,
 				Status: models.OFFLINE,
-			})
-			cl.Refresh()
+			}
+			
+			connections.Set(id.String(), c)
+			refresh(c)
 
 			eConnection.SetText("")
 			eName.SetText("")
@@ -127,10 +131,13 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, cl *fragments.Connection
 	w.SetContent(f)
 	w.Resize(fyne.NewSize(500, 400))
 
-	return &AddConnectionDialog{Window: w, ConnectionList: cl}
+	return &AddConnectionDialog{Window: w, Refresh: refresh}
 }
-
 
 func (d *AddConnectionDialog) Open() {
 	d.Window.Show()
+}
+
+func (d *AddConnectionDialog) Hide() {
+	d.Window.Hide()
 }
