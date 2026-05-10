@@ -62,6 +62,7 @@ func (c *ConnectionList) CreateRenderer() fyne.WidgetRenderer {
 			co.(*ConnectionButton).SetContent(b.label.Text, b.pLabel.Text)
 		},
 		)
+	l.HideSeparators = true
 
 	objects := []fyne.CanvasObject{
 		background,
@@ -122,7 +123,7 @@ func (r *connectionListRenderer) MinSize() fyne.Size {
 	}
 
 	h = h + float32(r.cList.connections[0].MinSize().Height * 4) + 1
-	return fyne.NewSize(0, h)
+	return fyne.NewSize(r.cList.connections[0].MinSize().Width, h)
 }
 
 func (r *connectionListRenderer) Layout(size fyne.Size) {
@@ -140,7 +141,7 @@ func (r *connectionListRenderer) Layout(size fyne.Size) {
 
 	ch := float32(hs.Height + 5)
 	l := r.list
-	l.Resize(fyne.NewSize(size.Width - 2, size.Height - ch))
+	l.Resize(fyne.NewSize(size.Width - 2, size.Height - ch - 1))
 	l.Move(fyne.NewPos(1, ch))
 }
 
@@ -156,23 +157,7 @@ func (r *connectionListRenderer) applyTheme() {
 }
 
 func (r *connectionListRenderer) Refresh() {
-	/*
-	objects := []fyne.CanvasObject{
-		r.background,
-		r.header,
-		r.addButton,
-	}
-	for i, obj := range r.list.connections {
-		obj.OnTapped = func(pe *fyne.PointEvent) {
-			r.list.SetSelected(i)
-		}
-		objects = append(objects, obj)
-	}
-	r.SetObjects(objects)
-	*/
-
 	r.list.Refresh()
 	r.applyTheme()
-	//r.Layout(r.MinSize())
 }
 

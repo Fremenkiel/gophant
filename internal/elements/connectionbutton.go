@@ -175,8 +175,8 @@ func (r *connectionButtonRenderer) Layout(size fyne.Size) {
 	l.Move(lp)
 
 	pls := l.MinSize()
-	plp := fyne.NewPos(size.Width - pls.Width - 12, (size.Height - ls.Height) / 2)
-	pl.Resize(pls)
+	plp := fyne.NewPos(size.Width - 26 - 12, (size.Height - ls.Height) / 2)
+	pl.Resize(fyne.NewSize(26, pls.Height))
 	pl.Move(plp)
 }
 
@@ -207,6 +207,8 @@ func (r *connectionButtonRenderer) applyTheme() {
 	if i := r.indicator; i != nil {
 		if b.focused {
 			i.Show()
+		} else {
+			i.Hide()
 		}
 		i.Refresh()
 	}
