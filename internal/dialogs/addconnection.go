@@ -7,6 +7,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Jipok/go-persist"
@@ -28,28 +29,28 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 	rUser := regexp.MustCompile(`[uU]ser [iI]d=(?P<userid>[^;]*);`)
 	rPass := regexp.MustCompile(`[pP]assword=(?P<password>[^;]*);`)
 
-	eName := widget.NewEntry()
-	eName.Validator = func(i string) error {
+	eName := elements.NewInput()
+	eName.SetValidator(func(i string) error {
 		if len(i) == 0 {
 			return errors.New("Name is required")
 		}
 		return nil
-	}
-	eAddress := widget.NewEntry()
-	eDb := widget.NewEntry()
-	ePort := widget.NewEntry()
-	ePort.Validator = func(i string) error {
+	})
+	eAddress := elements.NewInput()
+	eDb := elements.NewInput()
+	ePort := elements.NewInput()
+	ePort.SetValidator(func(i string) error {
 		_, err := strconv.ParseInt(i, 0, 16)
 		if err != nil {
 			return errors.New("Invalid port")
 		}
 		return nil
-	}
-	eUser := widget.NewEntry()
-	ePass := widget.NewEntry()
+	})
+	eUser := elements.NewInput()
+	ePass := elements.NewInput()
 
-	eConnection := widget.NewEntry()
-	eConnection.OnChanged = func(s string) {
+	eConnection := elements.NewInput()
+	eConnection.SetOnChanged(func(s string) {
 		if addressMatch := rAddress.FindStringSubmatch(s); len(addressMatch) == 2 {
 			eAddress.SetText(addressMatch[1])
 		}
@@ -65,14 +66,14 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 		if passMatch := rPass.FindStringSubmatch(s); len(passMatch) == 2 {
 			ePass.SetText(passMatch[1])
 		}
-	}
+	})
 
 	s := widget.NewSeparator()
 
 	w := a.NewWindow("Add Connection")
 	f := &widget.Form{
 		Items: []*widget.FormItem{
-			{ Text: "Connection", Widget: eConnection, HintText: "Enter a connection string."},
+			{ Widget: eConnection, HintText: "Enter a connection string."},
 			{ Widget: s },
 			{ Text: "Name", Widget: eName, HintText: "Name is required."},
 			{ Text: "Address", Widget: eAddress},
@@ -96,7 +97,7 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 				return 
 			}
 
-			p, err := strconv.ParseInt(ePort.Text, 0, 16)
+			p, err := strconv.ParseInt(ePort.Text(), 0, 16)
 			if err != nil {
 				r.Report(errors.New("Invalid port"))
 				return 
@@ -104,13 +105,13 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 
 			c := models.Connection{
 				ID: &id,
-				Name: eName.Text,
-				Address: eAddress.Text,
+				Name: eName.Text(),
+				Address: eAddress.Text(),
 				Permission: "ro",
 				Port: uint16(p),
-				Database: eDb.Text,
-				Username: eUser.Text,
-				Password: ePass.Text,
+				Database: eDb.Text(),
+				Username: eUser.Text(),
+				Password: ePass.Text(),
 				Status: models.OFFLINE,
 			}
 			

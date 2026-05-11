@@ -22,6 +22,11 @@ const (
 
 func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
 	switch name {
+	case theme.ColorNamePrimary:
+		if variant == theme.VariantLight {
+			return theme.DefaultTheme().Color(name, variant)
+		}
+		return color.RGBA{255, 255, 255, 255}
 	case theme.ColorNameBackground:
 		if variant == theme.VariantLight {
 			return theme.DefaultTheme().Color(name, variant)
