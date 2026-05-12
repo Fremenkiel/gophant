@@ -6,12 +6,9 @@ import (
 	"strconv"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/widget"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
-	"github.com/Jipok/go-persist"
-	"github.com/google/uuid"
 )
 
 type AddConnectionDialog struct {
@@ -68,9 +65,10 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 		}
 	})
 
-	s := widget.NewSeparator()
+	//s := widget.NewSeparator()
 
 	w := a.NewWindow("Add Connection")
+	/*
 	f := &widget.Form{
 		Items: []*widget.FormItem{
 			{ Widget: eConnection, HintText: "Enter a connection string."},
@@ -128,8 +126,13 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 			w.Hide()
 		},
 	}
+	*/
 
-	w.SetContent(f)
+	var fit []*elements.FormItem
+	fit = append(fit, elements.NewFormItem(eUser, "", ""))
+	ft := elements.NewForm(fit)
+
+	w.SetContent(ft)
 	w.Resize(fyne.NewSize(500, 400))
 
 	return &AddConnectionDialog{Window: w, Refresh: refresh}

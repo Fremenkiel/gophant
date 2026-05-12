@@ -43,27 +43,27 @@ func (t *inputTheme) Color(n fyne.ThemeColorName, v fyne.ThemeVariant) color.Col
 		if v == theme.VariantLight {
 			return t.Theme.Color(n, v)
 		}
-		return color.NRGBA{R: 34, G: 34, B: 43, A: 255}
+		return color.RGBA{34, 34, 43, 255}
 	case theme.ColorNamePrimary:            // focused border (Entry swaps to this)
 		if v == theme.VariantLight {
 			return t.Theme.Color(n, v)
 		}
-		return color.NRGBA{R: 42, G: 69, B: 89, A: 255}
+		return color.RGBA{42, 69, 89, 255}
 	case theme.ColorNameDisabled:           // disabled border
 		if v == theme.VariantLight {
 			return t.Theme.Color(n, v)
 		}
-		return color.NRGBA{R: 80, G: 80, B: 80, A: 255}
+		return color.RGBA{80, 80, 80, 255}
 	case theme.ColorNameError:              // validation-failed border
 		if v == theme.VariantLight {
 			return t.Theme.Color(n, v)
 		}
-		return color.NRGBA{R: 220, G: 80, B: 80, A: 255}
+		return color.RGBA{220, 80, 80, 255}
 	case theme.ColorNameForeground:
 		if v == theme.VariantLight {
 			return t.Theme.Color(n, v)
 		}
-		return color.NRGBA{229, 229, 233, 255}
+		return color.RGBA{229, 229, 233, 255}
 	}
 	return t.Theme.Color(n, v)
 }
