@@ -18,6 +18,7 @@ const (
 	ColorNameButtonHover = "ColorNameButtonHover"
 	ColorNameFocusText = "ColorNameFocusText"
 	ColorNameTransparent = "ColorNameTransparent"
+	ColorNameLabelText = "ColorNameLabelText"
 )
 
 func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
@@ -26,12 +27,17 @@ func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant
 		if variant == theme.VariantLight {
 			return theme.DefaultTheme().Color(name, variant)
 		}
-		return color.RGBA{255, 255, 255, 255}
+		return color.RGBA{42, 69, 89, 255}
+	case theme.ColorNameInputBorder:
+		if variant == theme.VariantLight {
+			return theme.DefaultTheme().Color(name, variant)
+		}
+		return color.RGBA{34, 34, 43, 255}
 	case theme.ColorNameBackground:
 		if variant == theme.VariantLight {
 			return theme.DefaultTheme().Color(name, variant)
 		}
-		return color.RGBA{8, 8, 10, 255}
+		return color.RGBA{19, 19, 24, 255}
 	case theme.ColorNameForeground:
 		if variant == theme.VariantLight {
 			return theme.DefaultTheme().Color(name, variant)
@@ -53,6 +59,16 @@ func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant
 		}
 		return color.RGBA{26, 26, 33, 255}
 	case theme.ColorNameButton:
+		if variant == theme.VariantLight {
+			return theme.DefaultTheme().Color(name, variant)
+		}
+		return color.RGBA{13, 13, 16, 255}
+	case theme.ColorNameError:
+		if variant == theme.VariantLight {
+			return theme.DefaultTheme().Color(name, variant)
+		}
+		return color.RGBA{226, 107, 99, 255}
+	case theme.ColorNameInputBackground:
 		if variant == theme.VariantLight {
 			return theme.DefaultTheme().Color(name, variant)
 		}
@@ -82,6 +98,11 @@ func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant
 			return color.RGBA{0, 0, 0, 255}
 		}
 		return color.RGBA{255, 255, 255, 255}
+	case ColorNameLabelText:
+		if variant == theme.VariantLight {
+			return color.RGBA{0, 0, 0, 255}
+		}
+		return color.RGBA{108, 108, 120, 255}
 	case ColorNameTransparent:
 		return color.Transparent
 	}

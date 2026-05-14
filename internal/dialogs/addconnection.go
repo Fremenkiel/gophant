@@ -2,13 +2,17 @@ package dialogs
 
 import (
 	"errors"
+	"image/color"
 	"regexp"
 	"strconv"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
+	"github.com/Fremenkiel/gophant/v2/internal/fs"
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
+	"github.com/Fremenkiel/gophant/v2/internal/th"
 )
 
 type AddConnectionDialog struct {
@@ -20,6 +24,9 @@ type AddConnectionDialog struct {
 
 func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Connection)) *AddConnectionDialog {
 	a := fyne.CurrentApp()
+	t := a.Settings().Theme()
+	v := a.Settings().ThemeVariant()
+
 	rAddress := regexp.MustCompile(`[sS]erver=(?P<server>[^;]*);`)
 	rDb := regexp.MustCompile(`[dD]atabase=(?P<database>[^;]*);`)
 	rPort := regexp.MustCompile(`[pP]ort=(?P<port>[0-9]*);`)
@@ -33,6 +40,17 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 		}
 		return nil
 	})
+
+	ul := canvas.NewText("URI", color.Transparent)
+	ul.Color = t.Color(th.ColorNameLabelText, v)
+	ul.TextSize = 11
+
+	ub := elements.NewIconButton(fs.IconNameCopy, nil)
+
+	ui := elements.NewInputAdornment(ul, ub)
+	ui.StartSpacer = true
+	ui.EndSpacer = true
+
 	eAddress := elements.NewInput()
 	eDb := elements.NewInput()
 	ePort := elements.NewInput()
@@ -43,7 +61,7 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 		}
 		return nil
 	})
-	eUser := elements.NewInput()
+	eUser := elements.NewInputAdornment(canvas.NewText("URI", color.White), nil)
 	ePass := elements.NewInput()
 
 	eConnection := elements.NewInput()
@@ -129,10 +147,13 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 	*/
 
 	var fit []*elements.FormItem
-	fit = append(fit, elements.NewFormItem(eUser, "", ""))
+	fi := elements.NewFormItem(ui, "Host", "resolves via DNS")
+	fi.Required = true
+	fit = append(fit, fi)
 	ft := elements.NewForm(fit)
 
 	w.SetContent(ft)
+	w.SetPadded(false)
 	w.Resize(fyne.NewSize(500, 400))
 
 	return &AddConnectionDialog{Window: w, Refresh: refresh}

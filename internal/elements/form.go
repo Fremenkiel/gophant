@@ -1,8 +1,6 @@
 package elements
 
 import (
-	"log"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
@@ -62,13 +60,13 @@ func (r *formRenderer) MinSize() fyne.Size {
 }
 
 func (r *formRenderer) Layout(size fyne.Size) {
-	log.Println(size)
 	r.background.Resize(size)
 	r.form.Resize(size)
+
 	for _, obj := range r.form.Items {
 		s := obj.MinSize()
-		obj.Resize(fyne.NewSize(size.Width, s.Height))
-		obj.Move(fyne.NewPos(0, 0))
+		obj.Resize(fyne.NewSize(size.Width - 20, s.Height))
+		obj.Move(fyne.NewPos(10, 10))
 	}
 }
 
@@ -77,8 +75,7 @@ func (r *formRenderer) applyTheme() {
 	v := fyne.CurrentApp().Settings().ThemeVariant()
 
 	if bg := r.background; bg != nil {
-		bg.StrokeColor = t.Color(theme.ColorNameSeparator, v)
-		bg.StrokeWidth = 1
+		bg.FillColor = t.Color(theme.ColorNameBackground, v)
 		bg.CornerRadius = 0
 	}
 }

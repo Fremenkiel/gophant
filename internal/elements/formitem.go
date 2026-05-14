@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/Fremenkiel/gophant/v2/internal/th"
 )
 
 type FormItem struct {
@@ -15,6 +16,8 @@ type FormItem struct {
 	input 			fyne.CanvasObject
 	label				*canvas.Text
 	helpertext	*canvas.Text
+
+	Required		bool
 
 }
 
@@ -45,9 +48,13 @@ func (f *FormItem) CreateRenderer() fyne.WidgetRenderer {
 
 	background := canvas.NewRectangle(t.Color(theme.ColorNameButton, v))
 	background.CornerRadius = t.Size(theme.SizeNameInputRadius)
+	
+	ri := canvas.NewText("*", color.Transparent)
+	ri.Hide()
 
 	objects := []fyne.CanvasObject{
 		background,
+		ri,
 		f.input,
 	}
 
@@ -62,6 +69,7 @@ func (f *FormItem) CreateRenderer() fyne.WidgetRenderer {
 	r := &formItemRenderer{
 		BaseRenderer: NewBaseRenderer(objects),
 		item: f,
+		requiredIndicator: ri,
 		background: background,
 	}
 	r.applyTheme()
@@ -73,16 +81,35 @@ type formItemRenderer struct {
 
 	background	*canvas.Rectangle
 	item				*FormItem
+	requiredIndicator	*canvas.Text
 	layout			fyne.Layout
 }
 
 func (r *formItemRenderer) MinSize() fyne.Size {
-	return r.item.input.MinSize()
+	is := r.item.input.MinSize()
+	ls := r.item.label.MinSize()
+	return fyne.NewSize(is.Width, is.Height + ls.Height + 5)
 }
 
 func (r *formItemRenderer) Layout(size fyne.Size) {
 	r.background.Resize(size)
-	r.item.input.Resize(size)
+	p := fyne.NewPos(0, 0)
+
+	ls := r.item.label.MinSize()
+	r.item.label.Resize(ls)
+	r.item.label.Move(p)
+
+	r.requiredIndicator.Resize(r.requiredIndicator.MinSize())
+	r.requiredIndicator.Move(fyne.NewPos(ls.Width + 5, 0))
+
+	hs := r.item.helpertext.MinSize()
+	r.item.helpertext.Resize(hs)
+	r.item.helpertext.Move(fyne.NewPos(size.Width - hs.Width, 0))
+
+	p = p.AddXY(0, ls.Height + 5)
+	is := r.item.input.MinSize()
+	r.item.input.Move(p)
+	r.item.input.Resize(fyne.NewSize(size.Width, is.Height))
 }
 
 func (r *formItemRenderer) applyTheme() {
@@ -90,9 +117,25 @@ func (r *formItemRenderer) applyTheme() {
 	v := fyne.CurrentApp().Settings().ThemeVariant()
 
 	if bg := r.background; bg != nil {
-		bg.StrokeColor = t.Color(theme.ColorNameSeparator, v)
-		bg.StrokeWidth = 1
-		bg.CornerRadius = 0
+		bg.FillColor = color.Transparent
+	}
+
+	if label := r.item.label; label != nil {
+		label.Color = t.Color(th.ColorNameLabelText, v)
+		label.TextSize = 11
+	}
+
+	if helpertext := r.item.helpertext; helpertext != nil {
+		helpertext.Color = t.Color(th.ColorNameLabelText, v)
+		helpertext.TextSize = 11
+	}
+
+	if ri := r.requiredIndicator; ri != nil {
+		ri.Color = t.Color(theme.ColorNameError, v)
+		ri.TextSize = 11
+		if r.item.Required {
+			ri.Show()
+		}
 	}
 }
 

@@ -2,7 +2,6 @@ package elements
 
 import (
 	"image/color"
-	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -39,26 +38,11 @@ type inputTheme struct{ fyne.Theme }
 
 func (t *inputTheme) Color(n fyne.ThemeColorName, v fyne.ThemeVariant) color.Color {
 	switch n {
-	case theme.ColorNameInputBorder:        // unfocused border
-		if v == theme.VariantLight {
-			return t.Theme.Color(n, v)
-		}
-		return color.RGBA{34, 34, 43, 255}
-	case theme.ColorNamePrimary:            // focused border (Entry swaps to this)
-		if v == theme.VariantLight {
-			return t.Theme.Color(n, v)
-		}
-		return color.RGBA{42, 69, 89, 255}
 	case theme.ColorNameDisabled:           // disabled border
 		if v == theme.VariantLight {
 			return t.Theme.Color(n, v)
 		}
 		return color.RGBA{80, 80, 80, 255}
-	case theme.ColorNameError:              // validation-failed border
-		if v == theme.VariantLight {
-			return t.Theme.Color(n, v)
-		}
-		return color.RGBA{220, 80, 80, 255}
 	case theme.ColorNameForeground:
 		if v == theme.VariantLight {
 			return t.Theme.Color(n, v)
@@ -69,7 +53,6 @@ func (t *inputTheme) Color(n fyne.ThemeColorName, v fyne.ThemeVariant) color.Col
 }
 
 func (t *inputTheme) Size(n fyne.ThemeSizeName) float32 {
-	log.Println(n)
 	switch n {
 	case theme.SizeNameInputBorder:   // border width (0 = no border)
 		return 1
