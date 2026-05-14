@@ -1,6 +1,8 @@
 package elements
 
 import (
+	"log"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
@@ -63,10 +65,21 @@ func (r *formRenderer) Layout(size fyne.Size) {
 	r.background.Resize(size)
 	r.form.Resize(size)
 
+	p := fyne.NewPos(20, 20)
 	for _, obj := range r.form.Items {
+		w := size.Width
+		if obj.Split {
+			w = size.Width / 2
+		}
 		s := obj.MinSize()
-		obj.Resize(fyne.NewSize(size.Width - 20, s.Height))
-		obj.Move(fyne.NewPos(10, 10))
+		log.Println(obj.Split)
+		obj.Resize(fyne.NewSize(w - 40, s.Height))
+		obj.Move(p)
+		if obj.Split && p.X == 20 {
+			p = fyne.NewPos(size.Width / 2, p.Y)
+			continue
+		}
+		p = fyne.NewPos(20, p.Y + s.Height + 20)
 	}
 }
 

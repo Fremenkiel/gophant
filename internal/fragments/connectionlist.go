@@ -29,14 +29,14 @@ func NewConnectionList(r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *el
 	}
 
 	cl := elements.NewConnectionList(cb, nil, nil)
+
+	cl.AddConnection = func(pe *fyne.PointEvent) {
 	acd := dialogs.NewAddConnectionDialog(r,
 		func(connection models.Connection) {
 			h := handlers.NewConnectionHandler(r, &connection)
 			cb = append(cb, elements.NewConnectionButton(h.Connection.Name, h.Connection.Permission, nil, nil, nil))
 			cl.SetContent(cb)
 		})
-
-	cl.AddConnection = func(pe *fyne.PointEvent) {
 		acd.Open()
 	}
 

@@ -2,7 +2,6 @@ package elements
 
 import (
 	"image/color"
-	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -19,8 +18,7 @@ type InputAdornment struct {
 	EndAdornment		fyne.CanvasObject
 
 	focus, hovered						bool
-	StartSpacer			bool
-	EndSpacer				bool
+	StartSpacer, EndSpacer			bool
 
 	override *container.ThemeOverride
 }

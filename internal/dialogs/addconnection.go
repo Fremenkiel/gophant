@@ -13,6 +13,7 @@ import (
 	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
+	"github.com/Fremenkiel/gophant/v2/internal/utils"
 )
 
 type AddConnectionDialog struct {
@@ -33,14 +34,7 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 	rUser := regexp.MustCompile(`[uU]ser [iI]d=(?P<userid>[^;]*);`)
 	rPass := regexp.MustCompile(`[pP]assword=(?P<password>[^;]*);`)
 
-	eName := elements.NewInput()
-	eName.SetValidator(func(i string) error {
-		if len(i) == 0 {
-			return errors.New("Name is required")
-		}
-		return nil
-	})
-
+	// URI input
 	ul := canvas.NewText("URI", color.Transparent)
 	ul.Color = t.Color(th.ColorNameLabelText, v)
 	ul.TextSize = 11
@@ -50,6 +44,43 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 	ui := elements.NewInputAdornment(ul, ub)
 	ui.StartSpacer = true
 	ui.EndSpacer = true
+	ui.SetValidator(func(i string) error {
+		if len(i) == 0 {
+			return errors.New("Name is required")
+		}
+		return nil
+	})
+
+	ub.OnTapped = func(pe *fyne.PointEvent) {
+		a.Clipboard().SetContent(ui.Text())
+	}
+	ufi := elements.NewFormItem(ui, "Host", "resolves via DNS")
+	ufi.Required = true
+
+	// Name input
+	ni := elements.NewInput()
+	ni.SetValidator(func(i string) error {
+		if len(i) == 0 {
+			return errors.New("Name is required")
+		}
+		return nil
+	})
+	nfi := elements.NewFormItem(ni, "Display name", "")
+	nfi.Required = true
+	nfi.Split = true
+
+	// Host input
+	hi := elements.NewInput()
+	hi.SetValidator(func(i string) error {
+		if len(i) == 0 {
+			return errors.New("Host is required")
+		}
+		return nil
+	})
+	hfi := elements.NewFormItem(hi, "Host", "")
+	hfi.Required = true
+	hfi.Split = true
+
 
 	eAddress := elements.NewInput()
 	eDb := elements.NewInput()
@@ -86,6 +117,9 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 	//s := widget.NewSeparator()
 
 	w := a.NewWindow("Add Connection")
+	w.SetCloseIntercept(func() {
+		w.Hide()
+	})
 	/*
 	f := &widget.Form{
 		Items: []*widget.FormItem{
@@ -146,15 +180,17 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 	}
 	*/
 
-	var fit []*elements.FormItem
-	fi := elements.NewFormItem(ui, "Host", "resolves via DNS")
-	fi.Required = true
-	fit = append(fit, fi)
+	fit := []*elements.FormItem{
+		ufi,
+		nfi,
+		hfi,
+	}
 	ft := elements.NewForm(fit)
 
 	w.SetContent(ft)
 	w.SetPadded(false)
 	w.Resize(fyne.NewSize(500, 400))
+	utils.MapDefaultKeyBindings(w)
 
 	return &AddConnectionDialog{Window: w, Refresh: refresh}
 }
@@ -165,4 +201,5 @@ func (d *AddConnectionDialog) Open() {
 
 func (d *AddConnectionDialog) Hide() {
 	d.Window.Hide()
+	d.Window.Close()
 }

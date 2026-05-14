@@ -17,7 +17,7 @@ type FormItem struct {
 	label				*canvas.Text
 	helpertext	*canvas.Text
 
-	Required		bool
+	Required, Split		bool
 
 }
 
@@ -87,26 +87,32 @@ type formItemRenderer struct {
 
 func (r *formItemRenderer) MinSize() fyne.Size {
 	is := r.item.input.MinSize()
-	ls := r.item.label.MinSize()
-	return fyne.NewSize(is.Width, is.Height + ls.Height + 5)
+	lh := r.item.label.MinSize().Height
+	return fyne.NewSize(is.Width, is.Height + lh + 5)
 }
 
 func (r *formItemRenderer) Layout(size fyne.Size) {
 	r.background.Resize(size)
 	p := fyne.NewPos(0, 0)
 
-	ls := r.item.label.MinSize()
-	r.item.label.Resize(ls)
-	r.item.label.Move(p)
+	lh := float32(0)
+	if l := r.item.label; l != nil {
+		ls := l.MinSize()
+		l.Resize(ls)
+		l.Move(p)
+		lh = ls.Height
 
-	r.requiredIndicator.Resize(r.requiredIndicator.MinSize())
-	r.requiredIndicator.Move(fyne.NewPos(ls.Width + 5, 0))
+		r.requiredIndicator.Resize(r.requiredIndicator.MinSize())
+		r.requiredIndicator.Move(fyne.NewPos(ls.Width + 5, 0))
+	}
 
-	hs := r.item.helpertext.MinSize()
-	r.item.helpertext.Resize(hs)
-	r.item.helpertext.Move(fyne.NewPos(size.Width - hs.Width, 0))
+	if h := r.item.helpertext; h != nil {
+		hs := h.MinSize()
+		h.Resize(hs)
+		h.Move(fyne.NewPos(size.Width - hs.Width, 0))
+	}
 
-	p = p.AddXY(0, ls.Height + 5)
+	p = p.AddXY(0, lh + 5)
 	is := r.item.input.MinSize()
 	r.item.input.Move(p)
 	r.item.input.Resize(fyne.NewSize(size.Width, is.Height))
