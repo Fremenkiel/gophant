@@ -19,6 +19,7 @@ const (
 	ColorNameFocusText = "ColorNameFocusText"
 	ColorNameTransparent = "ColorNameTransparent"
 	ColorNameLabelText = "ColorNameLabelText"
+	ColorNameInputBorderHover = "ColorNameInputBorderHover"
 )
 
 func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
@@ -103,6 +104,11 @@ func (m *GophantTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant
 			return color.RGBA{0, 0, 0, 255}
 		}
 		return color.RGBA{108, 108, 120, 255}
+	case ColorNameInputBorderHover:
+		if variant == theme.VariantLight {
+			return color.RGBA{200, 200, 255, 255}
+		}
+		return color.RGBA{44, 44, 55, 255}
 	case ColorNameTransparent:
 		return color.Transparent
 	}

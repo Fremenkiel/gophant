@@ -81,6 +81,12 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 	hfi.Required = true
 	hfi.Split = true
 
+	c1 := elements.NewChip("Prod", color.RGBA{255, 10, 10, 255}, nil, nil)
+	c2 := elements.NewChip("Stag", color.RGBA{10, 255, 10, 255}, nil, nil)
+	c3 := elements.NewChip("Dev", color.RGBA{10, 10, 255, 255}, nil, nil)
+	cs := elements.NewChipSelector(func(pe *fyne.PointEvent) {}, c1, c2, c3)
+	csfi := elements.NewFormItem(cs, "Group / tag", "visible in sidebar")
+
 
 	eAddress := elements.NewInput()
 	eDb := elements.NewInput()
@@ -184,6 +190,7 @@ func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Conn
 		ufi,
 		nfi,
 		hfi,
+		csfi,
 	}
 	ft := elements.NewForm(fit)
 

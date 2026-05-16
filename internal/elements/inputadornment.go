@@ -104,7 +104,9 @@ func (r *inputAdornmentRenderer) MinSize() fyne.Size {
 }
 
 func (r *inputAdornmentRenderer) Layout(size fyne.Size) {
-	r.background.Resize(size)
+	borderSize := r.background.StrokeWidth
+	r.background.Resize(fyne.NewSize(size.Width-borderSize-0.5, size.Height-borderSize-0.5))
+	r.background.Move(fyne.NewSquareOffsetPos(borderSize / 2))
 
 	sp := float32(0)
 	ep := float32(0)
