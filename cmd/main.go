@@ -22,7 +22,14 @@ func main() {
 		}
 	}
 
+	db, err := database.Open()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
 	database.ApplyMigrations()
+	database.SeedData()
 
 	a := app.New()
 	a.Settings().SetTheme(&th.GophantTheme{})

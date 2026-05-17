@@ -15,7 +15,7 @@ func NewConnectionRepository() *ConnectionRepository {
 }
 
 func (r *ConnectionRepository) GetAll() ([]models.Connection, error) {
-	db := database.CreateDB()
+	db := database.CurrentDB()
 
 	rows, err := db.Query("SELECT * FROM connections")
 	if err != nil {
@@ -40,7 +40,7 @@ func (r *ConnectionRepository) GetAll() ([]models.Connection, error) {
 }
 
 func (r *ConnectionRepository) Get(id uint) (models.Connection, error) {
-	db := database.CreateDB()
+	db := database.CurrentDB()
 
 	rows, err := db.Query("SELECT * FROM connections WHERE id = ?")
 	if err != nil {
@@ -63,7 +63,7 @@ func (r *ConnectionRepository) Get(id uint) (models.Connection, error) {
 }
 
 func (r *ConnectionRepository) Create(connection models.Connection) error {
-	db := database.CreateDB()
+	db := database.CurrentDB()
 
 	stmt, err := db.Prepare("INSERT INTO connections (name, permission, address, port, database, username, password, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?);")
 	if err != nil {
@@ -71,11 +71,12 @@ func (r *ConnectionRepository) Create(connection models.Connection) error {
 	}
 
 	_, err = stmt.Exec(connection.Name, connection.Permission, connection.Address, connection.Port, connection.Database, connection.Username, connection.Password, connection.Status)
+	stmt.Close()
 	return err
 }
 
 func (r *ConnectionRepository) Update(connection models.Connection) error {
-	db := database.CreateDB()
+	db := database.CurrentDB()
 
 	stmt, err := db.Prepare("UPDATE connections SET name = ?, permission = ?, address = ?, port = ?, database = ?, username = ?, password = ?, status = ? WHERE id = ?;")
 	if err != nil {
@@ -83,11 +84,12 @@ func (r *ConnectionRepository) Update(connection models.Connection) error {
 	}
 
 	_, err = stmt.Exec(connection.Name, connection.Permission, connection.Address, connection.Port, connection.Database, connection.Username, connection.Password, connection.Status, connection.ID)
+	stmt.Close()
 	return err
 }
 
 func (r *ConnectionRepository) Delete(connection models.Connection) error {
-	db := database.CreateDB()
+	db := database.CurrentDB()
 
 	res, err := db.Exec("DELETE FROM connections WHERE id = ?", connection.ID)
 	if err != nil {

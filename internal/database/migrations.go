@@ -23,8 +23,7 @@ func ApplyMigrations() {
 	fullFuncName := runtime.FuncForPC(pc).Name()
 	pkgPath := filepath.Dir(fullFuncName) 
 	
-	db := CreateDB()
-	defer db.Close()
+	db := CurrentDB()
 
 	am := AutoMigrator{
 		db: db,
@@ -33,7 +32,9 @@ func ApplyMigrations() {
 
 	am.migrate(
 		models.Connection{},
-		models.Database{})
+		models.Database{},
+		models.Group{},
+		)
 }
 
 type AutoMigrator struct {

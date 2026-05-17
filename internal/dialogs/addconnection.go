@@ -3,6 +3,7 @@ package dialogs
 import (
 	"errors"
 	"image/color"
+	"log"
 	"regexp"
 	"strconv"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/fs"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
+	"github.com/Fremenkiel/gophant/v2/internal/repositories"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 	"github.com/Fremenkiel/gophant/v2/internal/utils"
 )
@@ -19,12 +21,14 @@ type AddConnectionDialog struct {
 	Window					fyne.Window
 
 	Refresh					func(models.Connection)
+	groupRepo				*repositories.GroupRepository
 }
 
 func NewAddConnectionDialog(refresh func(models.Connection)) *AddConnectionDialog {
 	a := fyne.CurrentApp()
 	t := a.Settings().Theme()
 	v := a.Settings().ThemeVariant()
+	gRepo := repositories.NewGroupRepository()
 
 	rAddress := regexp.MustCompile(`[sS]erver=(?P<server>[^;]*);`)
 	rDb := regexp.MustCompile(`[dD]atabase=(?P<database>[^;]*);`)
@@ -79,10 +83,17 @@ func NewAddConnectionDialog(refresh func(models.Connection)) *AddConnectionDialo
 	hfi.Required = true
 	hfi.Split = true
 
-	c1 := elements.NewChip("Prod", color.RGBA{255, 10, 10, 255}, nil, nil)
-	c2 := elements.NewChip("Stag", color.RGBA{10, 255, 10, 255}, nil, nil)
-	c3 := elements.NewChip("Dev", color.RGBA{10, 10, 255, 255}, nil, nil)
-	cs := elements.NewChipSelector(func(pe *fyne.PointEvent) {}, c1, c2, c3)
+	g, err := gRepo.GetAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+		
+	var chips []*elements.Chip
+	for _, obj := range g {
+		chips = append(chips, elements.NewChip(obj.Name, color.RGBA{uint8(obj.R), uint8(obj.G), uint8(obj.B), 255}, nil, nil))
+	}
+
+	cs := elements.NewChipSelector(func(pe *fyne.PointEvent) {}, chips...)
 	csfi := elements.NewFormItem(cs, "Group / tag", "visible in sidebar")
 
 
