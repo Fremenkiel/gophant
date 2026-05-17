@@ -1,10 +1,9 @@
-package migrations
+package database
 
 import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -24,15 +23,8 @@ func ApplyMigrations() {
 	fullFuncName := runtime.FuncForPC(pc).Name()
 	pkgPath := filepath.Dir(fullFuncName) 
 	
-	db, err := sql.Open("sqlite3", os.Getenv("DB_NAME"))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
+	db := CreateDB()
+	defer db.Close()
 
 	am := AutoMigrator{
 		db: db,
@@ -42,7 +34,6 @@ func ApplyMigrations() {
 	am.migrate(
 		models.Connection{},
 		models.Database{})
-	db.Close()
 }
 
 type AutoMigrator struct {
@@ -112,7 +103,7 @@ func (m *AutoMigrator) alterTable(v reflect.Value, t reflect.Type, name, sql str
 
 	var cl []string
 	for obj := range strings.SplitSeq(strings.Replace(sql, "(", "", 1), ", ") {
-		if sobj := strings.Split(obj, " "); len(sobj) != 0 {
+		if sobj := strings.Split(obj, " "); len(sobj) != 0 && strings.Contains(cs, sobj[0]) {
 			cl = append(cl, sobj[0])
 		}
 	}

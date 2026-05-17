@@ -6,21 +6,18 @@ import (
 	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/handlers"
-	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/menus"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
-	"github.com/Jipok/go-persist"
+	"github.com/Fremenkiel/gophant/v2/internal/repositories"
 )
 
 type ConnectionList struct {
 	List	*widget.List
 	Data	[]*handlers.ConnectionHandler
-
-	reporter		interfaces.ErrorReporter
 }
 
-func NewConnectionList(r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *elements.ConnectionList {
-	connections := createSidebarElements(r)
+func NewConnectionList(cm *menus.ConnectionMenu) *elements.ConnectionList {
+	connections := createSidebarElements()
 
 
 	var cb []*elements.ConnectionButton
@@ -31,9 +28,9 @@ func NewConnectionList(r interfaces.ErrorReporter, cm *menus.ConnectionMenu) *el
 	cl := elements.NewConnectionList(cb, nil, nil)
 
 	cl.AddConnection = func(pe *fyne.PointEvent) {
-	acd := dialogs.NewAddConnectionDialog(r,
+	acd := dialogs.NewAddConnectionDialog(
 		func(connection models.Connection) {
-			h := handlers.NewConnectionHandler(r, &connection)
+			h := handlers.NewConnectionHandler(&connection)
 			cb = append(cb, elements.NewConnectionButton(h.Connection.Name, h.Connection.Permission, nil, nil, nil))
 			cl.SetContent(cb)
 		})
@@ -49,25 +46,26 @@ func (c *ConnectionList) Refresh() {
 }
 
 func (c *ConnectionList) Reload() {
-	c.Data = createSidebarElements(c.reporter)
+	c.Data = createSidebarElements()
 	c.List.UnselectAll()
 	c.List.Refresh()
 }
 
-func createSidebarElements(r interfaces.ErrorReporter) []*handlers.ConnectionHandler {
-	databases, err := persist.OpenSingleMap[models.Connection]("connections.db")
+func createSidebarElements() []*handlers.ConnectionHandler {
+	repo := repositories.NewConnectionRepository()
+	databases, err := repo.GetAll()
 	if err != nil {
-		r.Report(err)
+		dialogs.ReportError(err)
 		return nil
 	}
-	defer databases.Store.Close()
 
 	var connections []*handlers.ConnectionHandler
-	databases.Range(func(k string, v models.Connection) bool {
-		h := handlers.NewConnectionHandler(r, &v)
+
+	for _, obj := range databases {
+		h := handlers.NewConnectionHandler(&obj)
 		connections = append(connections, h)
-		return true
-	})
+	}
+
 	return connections
 }
 

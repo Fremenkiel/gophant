@@ -4,58 +4,36 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Fremenkiel/gophant/v2/internal/handlers"
-	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
-	"github.com/Jipok/go-persist"
+	"github.com/Fremenkiel/gophant/v2/internal/repositories"
 )
 
 type ConnectionMenu struct {
 	Window					fyne.Window
 	PopUp					*widget.PopUpMenu
-	reporter			interfaces.ErrorReporter
+	repo					*repositories.ConnectionRepository
 }
 
-func NewConnectionMenu(r interfaces.ErrorReporter, w fyne.Window) *ConnectionMenu {
-	return &ConnectionMenu{Window: w, reporter: r}
+func NewConnectionMenu(w fyne.Window) *ConnectionMenu {
+	return &ConnectionMenu{Window: w, repo: repositories.NewConnectionRepository()}
 }
 
 
 func (d *ConnectionMenu) Open(pos fyne.Position, c *handlers.ConnectionHandler, refresh, reload func()) {
 	i1 := fyne.NewMenuItem("Remove Connection", func() {
-		connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
-		if err != nil {
-			d.reporter.Report(err)
-			return 
-		}
-		defer connections.Store.Close()
-
-		connections.Delete(c.Connection.ID.String())
+		d.repo.Delete(*c.Connection)
 		reload()
 	})
 
 	i2 := fyne.NewMenuItem("Disconnect", func() {
 		c.Disconnect()
-		connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
-		if err != nil {
-			d.reporter.Report(err)
-			return 
-		}
-		defer connections.Store.Close()
-
-		connections.Set(c.Connection.ID.String(), *c.Connection)
+		d.repo.Update(*c.Connection)
 		refresh()
 	})
 	if c.Connection.Status == models.OFFLINE {
 		i2 = fyne.NewMenuItem("Connect", func() {
 			c.Connect()
-			connections, err := persist.OpenSingleMap[models.Connection]("connections.db")
-			if err != nil {
-				d.reporter.Report(err)
-				return 
-			}
-			defer connections.Store.Close()
-
-			connections.Set(c.Connection.ID.String(), *c.Connection)
+			d.repo.Create(*c.Connection)
 			refresh()
 		})
 	}

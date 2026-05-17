@@ -6,14 +6,13 @@ import (
 	"github.com/Fremenkiel/gophant/v2/internal/containers"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/fs"
-	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 )
 
-func NewSidebar(w fyne.Window, r interfaces.ErrorReporter) *fyne.Container {
-	sc := NewSchemaView(w, r)
-	qu := NewQueryView(w, r)
-	hi := NewHistoryView(w, r)
+func NewSidebar(w fyne.Window) *fyne.Container {
+	sc := NewSchemaView(w,)
+	qu := NewQueryView(w)
+	hi := NewHistoryView(w)
 
 	toolbar := containers.NewSidebarTab(
 		func(i int) {

@@ -6,9 +6,8 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/fragments"
-	"github.com/Fremenkiel/gophant/v2/internal/migrations"
+	"github.com/Fremenkiel/gophant/v2/internal/database"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 	"github.com/Fremenkiel/gophant/v2/internal/utils"
 	"github.com/Fremenkiel/gophant/v2/pkg/dotenv"
@@ -23,7 +22,7 @@ func main() {
 		}
 	}
 
-	migrations.ApplyMigrations()
+	database.ApplyMigrations()
 
 	a := app.New()
 	a.Settings().SetTheme(&th.GophantTheme{})
@@ -34,9 +33,7 @@ func main() {
 	w.SetMainMenu(fyne.NewMainMenu(fyne.NewMenu("test", fyne.NewMenuItem("test.action", func() {}))))
 	w.SetMaster()
 
-	ed := dialogs.NewErrorDialog()
-
-	ls := fragments.NewMainLayout(w, ed)
+	ls := fragments.NewMainLayout(w)
 
 	w.SetContent(ls.BuildLayout())
 	utils.MapMainKeyBindings(w)

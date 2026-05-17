@@ -10,7 +10,6 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"github.com/Fremenkiel/gophant/v2/internal/elements"
 	"github.com/Fremenkiel/gophant/v2/internal/fs"
-	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 	"github.com/Fremenkiel/gophant/v2/internal/utils"
@@ -18,12 +17,11 @@ import (
 
 type AddConnectionDialog struct {
 	Window					fyne.Window
-	reporter				interfaces.ErrorReporter
 
 	Refresh					func(models.Connection)
 }
 
-func NewAddConnectionDialog(r interfaces.ErrorReporter, refresh func(models.Connection)) *AddConnectionDialog {
+func NewAddConnectionDialog(refresh func(models.Connection)) *AddConnectionDialog {
 	a := fyne.CurrentApp()
 	t := a.Settings().Theme()
 	v := a.Settings().ThemeVariant()

@@ -4,16 +4,15 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
 )
 
 type MainLayout struct {
 	Sidebar 		*fyne.Container
 }
 
-func NewMainLayout(w fyne.Window, r interfaces.ErrorReporter) *MainLayout {
+func NewMainLayout(w fyne.Window) *MainLayout {
 
-	return &MainLayout{Sidebar: NewSidebar(w, r)}
+	return &MainLayout{Sidebar: NewSidebar(w)}
 }
 
 func (s *MainLayout) BuildLayout() *container.Split {

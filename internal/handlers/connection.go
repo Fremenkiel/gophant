@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Fremenkiel/gophant/v2/internal/interfaces"
+	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/models"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
@@ -17,10 +17,9 @@ type ConnectionHandler struct {
 	c					*sql.DB
 	cfg					pq.Config
 	db					[]models.Database
-	reporter		interfaces.ErrorReporter
 }
 
-func NewConnectionHandler(r interfaces.ErrorReporter, c *models.Connection) *ConnectionHandler {
+func NewConnectionHandler(c *models.Connection) *ConnectionHandler {
 	return &ConnectionHandler{Connection: c, cfg: pq.Config{
 		Host:           c.Address,
 		Port:           c.Port,
@@ -29,14 +28,14 @@ func NewConnectionHandler(r interfaces.ErrorReporter, c *models.Connection) *Con
 		Password: 			c.Password,
 		ConnectTimeout: 5 * time.Second,
 		SSLMode: pq.SSLModePrefer,
-	}, reporter: r}
+	}}
 }
 
 func (h *ConnectionHandler) Connect() {
 	if h.c == nil {
 		db, err := createConnection(h.cfg)
 		if err != nil {
-			h.reporter.Report(err)
+			dialogs.ReportError(err)
 			return
 		}
 
@@ -46,7 +45,7 @@ func (h *ConnectionHandler) Connect() {
 	if err != nil {
 		db, err := createConnection(h.cfg)
 		if err != nil {
-			h.reporter.Report(err)
+			dialogs.ReportError(err)
 			return
 		}
 
@@ -61,7 +60,7 @@ func (h *ConnectionHandler) Disconnect() {
 	}
 	err := h.c.Close()
 	if err != nil {
-			h.reporter.Report(err)
+			dialogs.ReportError(err)
 			return
 	}
 	h.c = nil
@@ -80,7 +79,7 @@ func (h *ConnectionHandler) GetDatabases(refresh func()) []models.Database {
 
 	rows, err := h.c.Query("SELECT datname FROM pg_database;")
 	if err != nil {
-			h.reporter.Report(err)
+			dialogs.ReportError(err)
 			return nil
 	}
 	defer rows.Close()
@@ -92,7 +91,7 @@ func (h *ConnectionHandler) GetDatabases(refresh func()) []models.Database {
 	for rows.Next() {
 		var db models.Database
 		if err := rows.Scan(&db.Name); err != nil {
-			h.reporter.Report(err)
+			dialogs.ReportError(err)
 			return nil
 		}
 		if !strings.Contains(db.Name, "template") {
@@ -100,7 +99,7 @@ func (h *ConnectionHandler) GetDatabases(refresh func()) []models.Database {
 		}
 	}
 	if err = rows.Err(); err != nil {
-			h.reporter.Report(err)
+			dialogs.ReportError(err)
 			return nil
 	}
 	h.db = databases

@@ -1,22 +1,13 @@
 package models
 
-import (
-	"time"
-
-	"github.com/google/uuid"
-)
-
-
 type Connection struct {
-	ID										*uuid.UUID
+	ID										uint
 	Name									string
 	Permission						string
 	Address								string
 	Port									uint16
 	Database							string
-	Db										*Database
 	Username							string
 	Password							string
 	Status								Status
-	DeletedAt							time.Time
 }
