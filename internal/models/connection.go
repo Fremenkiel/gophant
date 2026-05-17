@@ -1,6 +1,10 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 
 type Connection struct {
@@ -13,4 +17,5 @@ type Connection struct {
 	Username							string
 	Password							string
 	Status								Status
+	DeletedAt							time.Time
 }

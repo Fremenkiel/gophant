@@ -1,15 +1,30 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"github.com/Fremenkiel/gophant/v2/internal/dialogs"
 	"github.com/Fremenkiel/gophant/v2/internal/fragments"
+	"github.com/Fremenkiel/gophant/v2/internal/migrations"
 	"github.com/Fremenkiel/gophant/v2/internal/th"
 	"github.com/Fremenkiel/gophant/v2/internal/utils"
+	"github.com/Fremenkiel/gophant/v2/pkg/dotenv"
 )
 
 func main() {
+	const envFile = ".env"
+	if _, err := os.Stat(envFile); err == nil {
+		if err := dotenv.Load(envFile); err != nil {
+			log.Printf("load %s:", envFile)
+			log.Fatal(err)
+		}
+	}
+
+	migrations.ApplyMigrations()
+
 	a := app.New()
 	a.Settings().SetTheme(&th.GophantTheme{})
 
