@@ -14,6 +14,7 @@ type Connection struct {
 	Address								string
 	Port									uint16
 	Database							string
+	Db										*Database
 	Username							string
 	Password							string
 	Status								Status

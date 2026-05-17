@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 
 	"github.com/Fremenkiel/gophant/v2/internal/models"
@@ -13,57 +15,82 @@ import (
 )
 
 func ApplyMigrations() {
+	pc, _, _, ok := runtime.Caller(0)
+	if !ok {
+		fmt.Println("Could not recover runtime information")
+		return
+	}
+
+	fullFuncName := runtime.FuncForPC(pc).Name()
+	pkgPath := filepath.Dir(fullFuncName) 
+	
 	db, err := sql.Open("sqlite3", os.Getenv("DB_NAME"))
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	am := AutoMigrator{db: db}
+	am := AutoMigrator{
+		db: db,
+		pkgPath: pkgPath,
+	}
 
-	test := models.Connection{}
-	am.migrate(test)
-
+	am.migrate(
+		models.Connection{},
+		models.Database{})
+	db.Close()
 }
 
 type AutoMigrator struct {
 	db		*sql.DB
+	pkgPath		string
 }
 
-func (m *AutoMigrator) migrate(s any) {
-	v := reflect.ValueOf(s)
-	vkind := v.Kind()
-	if vkind == reflect.Pointer {
-		v = v.Elem()
+func (m *AutoMigrator) migrate(s ...any) {
+	var q []string
+	for _, obj := range s {
+		v := reflect.ValueOf(obj)
+		vkind := v.Kind()
+		if vkind == reflect.Pointer {
+			v = v.Elem()
+		}
+
+			t := reflect.TypeOf(obj)
+		n := fmt.Sprintf("%ss", toSnake(t.Name()))
+
+		var r sql.NullString
+		err := m.db.QueryRow("SELECT sql FROM sqlite_master WHERE type='table' AND name = ?;", n).Scan(&r)
+		if err == nil && r.Valid && r.String != "" {
+			q = append(q, m.alterTable(v, t, n, r.String, vkind))
+		} else {
+			q = append(q, m.createTable(v, t, n, vkind))
+		}
 	}
-
-	t := reflect.TypeOf(s)
-	n := fmt.Sprintf("%ss", toSnake(t.Name()))
-
-	var r sql.NullString
-	err := m.db.QueryRow("SELECT sql FROM sqlite_master WHERE type='table' AND name = ?;", n).Scan(&r)
-	if err == nil && r.Valid && r.String != "" {
-		m.alterTable(v, t, n, r.String, vkind)
-	} else {
-		m.createTable(v, t, n, vkind)
-	}
-}
-
-func (m *AutoMigrator) createTable(v reflect.Value, t reflect.Type, name string, vkind reflect.Kind) {
-	cols := generateColumns(v.NumField(), t, vkind)
-
-	_, err := m.db.Exec(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", name, strings.Join(cols, ", ")))
+	qs := fmt.Sprintf(`PRAGMA foreign_keys=off;
+BEGIN TRANSACTION;
+		%s
+COMMIT;
+PRAGMA foreign_keys=on;`, strings.Join(q, "\n"))
+	_, err := m.db.Exec(qs)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func (m *AutoMigrator) alterTable(v reflect.Value, t reflect.Type, name, sql string, vkind reflect.Kind) {
+func (m *AutoMigrator) createTable(v reflect.Value, t reflect.Type, name string, vkind reflect.Kind) string {
+	cols, fkeys := m.generateColumns(v, t, vkind)
+
+	for _, obj := range fkeys {
+		cols = append(cols, obj)
+	}
+	return fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s);", name, strings.Join(cols, ", "))
+}
+
+func (m *AutoMigrator) alterTable(v reflect.Value, t reflect.Type, name, sql string, vkind reflect.Kind) string {
 	spre := fmt.Sprintf("CREATE TABLE %s ", name)
 	sprevq := fmt.Sprintf("CREATE TABLE \"%s\" ", name)
 	if !strings.Contains(sql, spre) && !strings.Contains(sql, sprevq) {
@@ -71,11 +98,16 @@ func (m *AutoMigrator) alterTable(v reflect.Value, t reflect.Type, name, sql str
 	}
 	sql = strings.Replace(sql, spre, "", 1)
 	sql = strings.Replace(sql, sprevq, "", 1)
-	cols := generateColumns(v.NumField(), t, vkind)
+	cols, fkeys := m.generateColumns(v, t, vkind)
+	
+	for _, obj := range fkeys {
+		cols = append(cols, obj)
+	}
+
 	cs := fmt.Sprintf("(%s)", strings.Join(cols, ", "))
 
 	if cs == sql {
-		return
+		return ""
 	}
 
 	var cl []string
@@ -85,29 +117,49 @@ func (m *AutoMigrator) alterTable(v reflect.Value, t reflect.Type, name, sql str
 		}
 	}
 
-	q := fmt.Sprintf(`PRAGMA foreign_keys=off;
-BEGIN TRANSACTION;
-CREATE TABLE IF NOT EXISTS temp_%s %s;
+	q := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS temp_%s %s;
 INSERT INTO temp_%s (%s)
 SELECT %s
 FROM %s;
 DROP TABLE %s;
-ALTER TABLE temp_%s RENAME TO %s; 
-COMMIT;
-PRAGMA foreign_keys=on;`, name, cs, name, strings.Join(cl, ", "), strings.Join(cl, ", "), name, name, name, name)
+ALTER TABLE temp_%s RENAME TO %s;`, name, cs, name, strings.Join(cl, ", "), strings.Join(cl, ", "), name, name, name, name)
 
-	_, err := m.db.Exec(q)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return q
 }
 
-func generateColumns(length int, t reflect.Type, vkind reflect.Kind) []string {
+func (m *AutoMigrator) generateColumns(v reflect.Value, t reflect.Type, vkind reflect.Kind) ([]string, []string) {
 	var cols []string
-	for i := range length {
-		ft := t.Field(i)
-		n := toSnake(ft.Name)
-		t, err := dbType(ft.Type)
+	var fkeys	[]string
+	for i := range v.NumField() {
+		f := t.Field(i)
+		ft := f.Type
+		fkind := ft.Kind()
+		if fkind == reflect.Pointer {
+			ft = ft.Elem()
+		}
+		n := toSnake(f.Name)
+		if ft.Kind() == reflect.Struct && strings.Contains(ft.PkgPath(), m.pkgPath) {
+			sub := reflect.New(ft).Elem()
+			subf := sub.FieldByName("ID")
+			t, err := m.dbType(subf.Type())
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			kid := fmt.Sprintf("%s_id", n)
+			ks := []string{kid, t}
+			if fkind != reflect.Pointer {
+				ks = append(ks, "NOT NULL")
+			}
+
+			tn := fmt.Sprintf("%ss", toSnake(sub.Type().Name()))
+			fks := fmt.Sprintf("FOREIGN KEY (%s) REFERENCES %s (%s)", kid, tn, kid)
+			q := fmt.Sprintf("%s, %s", strings.Join(ks, " "), fks)
+			fkeys = append(fkeys, q)
+			continue
+		}
+
+		t, err := m.dbType(f.Type)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -117,7 +169,7 @@ func generateColumns(length int, t reflect.Type, vkind reflect.Kind) []string {
 			cs = append(cs, "PRIMARY KEY")
 		}
 
-		if tag := ft.Tag.Get("SQLITE"); tag != "" {
+		if tag := f.Tag.Get("SQLITE"); tag != "" {
 			ts := strings.SplitSeq(tag, ";")
 			for obj := range ts {
 				cs = append(cs, obj)
@@ -130,7 +182,7 @@ func generateColumns(length int, t reflect.Type, vkind reflect.Kind) []string {
 
 		cols = append(cols, strings.Join(cs, " "))
 	}
-	return cols
+	return cols, fkeys
 }
 
 func toSnake(camel string) string {
@@ -152,7 +204,7 @@ func toSnake(camel string) string {
     return b.String()
 }
 
-func dbType(t reflect.Type) (string, error) {
+func (m *AutoMigrator) dbType(t reflect.Type) (string, error) {
 	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
